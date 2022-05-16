@@ -8,6 +8,7 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.vlm.wonjoonpotfolio.ui.IamDestination.I_AM_MAIN
 import com.vlm.wonjoonpotfolio.ui.PortfolioDestination.CHAT
 import com.vlm.wonjoonpotfolio.ui.PortfolioDestination.EVALUATE
 import com.vlm.wonjoonpotfolio.ui.PortfolioDestination.HISTORY
@@ -20,11 +21,14 @@ import com.vlm.wonjoonpotfolio.ui.theme.WonjoonPotfolioTheme
 fun PortfolioMain() {
     WonjoonPotfolioTheme{
         val appState = rememberPortfolioAppState()
+
         val navBackStackEntry by appState.navHostController.currentBackStackEntryAsState()
         val currentRoute =
             navBackStackEntry?.destination?.route ?: I_AM
+
         Scaffold(
             modifier = Modifier,
+            topBar = { Text(text = currentRoute) },
             bottomBar = {
                 if(appState.shouldShowBar){
                     PortfolioBottomNav(
@@ -68,17 +72,18 @@ class PortfolioAppState(
     val navHostController: NavHostController,
 ){
     val bottomItems = listOf<String>(I_AM,HISTORY, CHAT, EVALUATE, SETTING)
+    val MainNavPage = listOf<String>(I_AM_MAIN,HISTORY, CHAT, EVALUATE, SETTING)
 
     val currentRoute  : String
-    get() = navHostController.currentDestination?.route?: I_AM
+    get() = navHostController.currentDestination?.route?: I_AM_MAIN
 
     val shouldShowBar : Boolean
-         get() = currentRoute in bottomItems
+         get() = currentRoute in MainNavPage
 
     fun moveByBottomNavigation(route : String){
         if(route != currentRoute) {
             navHostController.navigate(route){
-                popUpTo(I_AM){
+                popUpTo(I_AM_MAIN){
                     saveState = true
                 }
             }

@@ -4,10 +4,10 @@ import androidx.compose.material.ScaffoldState
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.vlm.wonjoonpotfolio.ui.history.iAmNavGraph
 
 @Composable
 fun PortfolioNavGraph(
@@ -20,9 +20,10 @@ fun PortfolioNavGraph(
         startDestination = PortfolioDestination.I_AM,
         modifier = modifier
     ){
-        composable(PortfolioDestination.I_AM){
-            Text(text = "1")
-        }
+        iAmNavGraph(
+            navHostController = navController,
+            scaffoldState = scaffoldState
+        )
         composable(PortfolioDestination.HISTORY){
             Text(text = "@")
         }

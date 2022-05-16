@@ -9,6 +9,12 @@ object PortfolioDestination{
 
 }
 
+object IamDestination{
+    const val I_AM_MAIN = "IAmMain"
+    const val PROJECT_DETAIL = "ProjectDetail"
+    const val LOCATION = "Location"
+}
+
 
 
 class PortfolioNavigation {
