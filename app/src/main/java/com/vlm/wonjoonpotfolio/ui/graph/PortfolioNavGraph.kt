@@ -7,7 +7,9 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.vlm.wonjoonpotfolio.ui.history.iAmNavGraph
+import com.vlm.wonjoonpotfolio.GraphList
+import com.vlm.wonjoonpotfolio.Screen
+import com.vlm.wonjoonpotfolio.ui.graph.iAmNavGraph
 
 @Composable
 fun PortfolioNavGraph(
@@ -18,22 +20,25 @@ fun PortfolioNavGraph(
     NavHost(
         navController = navController,
         startDestination = PortfolioDestination.I_AM,
-        modifier = modifier
+        route = GraphList.RootGraph.route,
+        modifier = modifier,
     ){
         iAmNavGraph(
             navHostController = navController,
-            scaffoldState = scaffoldState
+            scaffoldState = scaffoldState,
+            startDestination = Screen.IAmMain.route,
+            route = PortfolioDestination.I_AM
         )
-        composable(PortfolioDestination.HISTORY){
+        composable(Screen.HistoryMain.route){
             Text(text = "@")
         }
-        composable(PortfolioDestination.CHAT){
+        composable(Screen.ChatMain.route){
             Text(text = "3")
         }
-        composable(PortfolioDestination.EVALUATE){
+        composable(Screen.EvaluateMain.route){
             Text(text = "4")
         }
-        composable(PortfolioDestination.SETTING){
+        composable(Screen.SettingMain.route){
             Text(text = "5")
         }
     }

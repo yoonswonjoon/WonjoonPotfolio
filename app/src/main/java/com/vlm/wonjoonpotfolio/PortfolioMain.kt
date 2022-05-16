@@ -17,6 +17,29 @@ import com.vlm.wonjoonpotfolio.ui.PortfolioDestination.SETTING
 import com.vlm.wonjoonpotfolio.ui.PortfolioNavGraph
 import com.vlm.wonjoonpotfolio.ui.theme.WonjoonPotfolioTheme
 
+
+sealed class Screen(val route: String, ){
+    object IAmMain :Screen("IamMain")
+    object Project :Screen("Project")
+
+    object HistoryMain :Screen("HistoryMain")
+
+    object ChatMain :Screen("ChatMain")
+
+    object EvaluateMain :Screen("EvaluateMain")
+
+    object SettingMain :Screen("SettingMain")
+}
+//
+sealed class GraphList(val route : String){
+    object RootGraph : GraphList("Root")
+    object IAmGraph :GraphList("IAm")
+    object HistoryGraph :GraphList("History")
+    object ChatGraph :GraphList("Chat")
+    object EvaluateGraph :GraphList("Evaluate")
+    object SettingGraph :GraphList("Setting")
+}
+
 @Composable
 fun PortfolioMain() {
     WonjoonPotfolioTheme{
@@ -57,11 +80,11 @@ fun PortfolioBottomNav(
     navToRoute: (String) ->Unit
 ){
     BottomNavigation() {
-        appState.bottomItems.map {
+        appState.mainNavScreen.map {
             BottomNavigationItem(
-                selected = current == it,
-                onClick = { navToRoute(it) },
-                icon = { Text(text = it) },
+                selected = current == it.route,
+                onClick = { navToRoute(it.route) },
+                icon = { Text(text = it.route) },
             )
         }
     }
@@ -71,19 +94,19 @@ class PortfolioAppState(
     val scaffoldState: ScaffoldState,
     val navHostController: NavHostController,
 ){
-    val bottomItems = listOf<String>(I_AM,HISTORY, CHAT, EVALUATE, SETTING)
-    val MainNavPage = listOf<String>(I_AM_MAIN,HISTORY, CHAT, EVALUATE, SETTING)
+    val rootNav = listOf<String>(I_AM,HISTORY, CHAT, EVALUATE, SETTING)
+    val mainNavScreen = listOf(Screen.IAmMain,Screen.HistoryMain, Screen.ChatMain, Screen.EvaluateMain, Screen.SettingMain)
 
     val currentRoute  : String
     get() = navHostController.currentDestination?.route?: I_AM_MAIN
 
     val shouldShowBar : Boolean
-         get() = currentRoute in MainNavPage
+         get() = currentRoute in mainNavScreen.map { it.route }
 
     fun moveByBottomNavigation(route : String){
         if(route != currentRoute) {
             navHostController.navigate(route){
-                popUpTo(I_AM_MAIN){
+                popUpTo(Screen.IAmMain.route){
                     saveState = true
                 }
             }
