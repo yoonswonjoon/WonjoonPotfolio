@@ -4,12 +4,14 @@ import androidx.compose.material.ScaffoldState
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.vlm.wonjoonpotfolio.GraphList
 import com.vlm.wonjoonpotfolio.Screen
 import com.vlm.wonjoonpotfolio.ui.graph.iAmNavGraph
+import com.vlm.wonjoonpotfolio.ui.iAm.IAmViewModel
 
 @Composable
 fun PortfolioNavGraph(
@@ -17,6 +19,8 @@ fun PortfolioNavGraph(
     scaffoldState: ScaffoldState,
     modifier : Modifier =  Modifier
 ) {
+    val iamViewModel : IAmViewModel = viewModel()
+
     NavHost(
         navController = navController,
         startDestination = PortfolioDestination.I_AM,
@@ -25,6 +29,7 @@ fun PortfolioNavGraph(
     ){
         iAmNavGraph(
             navHostController = navController,
+            viewModel = iamViewModel,
             scaffoldState = scaffoldState,
             startDestination = Screen.IAmMain.route,
             route = PortfolioDestination.I_AM

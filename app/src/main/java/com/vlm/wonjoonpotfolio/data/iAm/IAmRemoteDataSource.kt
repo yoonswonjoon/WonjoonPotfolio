@@ -1,7 +1,9 @@
 package com.vlm.wonjoonpotfolio.data.iAm
 
+import com.vlm.wonjoonpotfolio.domain.Result
 import kotlinx.coroutines.flow.Flow
 
 interface IAmRemoteDataSource {
-    suspend fun getIam() : Flow<IAm>
+    fun test() : String
+//    fun getIam() : Flow<Result<IAm>>
 }
