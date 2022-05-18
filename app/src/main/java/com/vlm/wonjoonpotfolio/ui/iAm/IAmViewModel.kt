@@ -1,10 +1,10 @@
 package com.vlm.wonjoonpotfolio.ui.iAm
 
-import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.firebase.firestore.FirebaseFirestore
 import com.vlm.wonjoonpotfolio.data.iAm.GetIAmDataUseCase
-import com.vlm.wonjoonpotfolio.domain.Result
+import com.vlm.wonjoonpotfolio.domain.ResultState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import javax.inject.Inject
@@ -19,8 +19,11 @@ data class IAmMainViewState(
 )
 
 @HiltViewModel
-class IAmViewModel @Inject constructor(private val getIAmDataUseCase: GetIAmDataUseCase)
-    : ViewModel() {
+class IAmViewModel
+@Inject
+constructor(
+    private val getIAmDataUseCase: GetIAmDataUseCase,
+    ) : ViewModel() {
     private val _uiState = MutableStateFlow(
         IAmMainViewState(
             img = null,
@@ -39,19 +42,19 @@ class IAmViewModel @Inject constructor(private val getIAmDataUseCase: GetIAmData
 
     init {
         getIAmDataUseCase.act()
-//        getIAmDataUseCase().onEach { result ->
-//            when(result){
-//                is Result.Loading -> {
-//                    _uiState.value = _uiState.value.copy(isLoading = true)
-//                }
-//                is Result.Success -> {
-//                    _uiState.value = _uiState.value.copy(isLoading = false, basicIntro = result.data.name)
-//                }
-//                is Result.Error -> {
-//                    _uiState.value = _uiState.value.copy(isLoading = false, basicIntro = result.message)
-//                }
-//            }
-//        }.launchIn(viewModelScope)
+        getIAmDataUseCase().onEach { result ->
+            when(result){
+                is ResultState.Loading -> {
+                    _uiState.value = _uiState.value.copy(isLoading = true)
+                }
+                is ResultState.Success -> {
+                    _uiState.value = _uiState.value.copy(isLoading = false, basicIntro = result.data.name)
+                }
+                is ResultState.Error -> {
+                    _uiState.value = _uiState.value.copy(isLoading = false, basicIntro = result.message)
+                }
+            }
+        }.launchIn(viewModelScope)
     }
 
 }
