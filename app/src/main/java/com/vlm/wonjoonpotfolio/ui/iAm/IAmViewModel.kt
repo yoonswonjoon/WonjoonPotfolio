@@ -41,7 +41,6 @@ constructor(
     )
 
     init {
-        getIAmDataUseCase.act()
         getIAmDataUseCase().onEach { result ->
             when(result){
                 is ResultState.Loading -> {
