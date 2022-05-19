@@ -1,9 +1,9 @@
 package com.vlm.wonjoonpotfolio.ui.iAm
 
+import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.google.firebase.firestore.FirebaseFirestore
-import com.vlm.wonjoonpotfolio.data.iAm.GetIAmDataUseCase
+import com.vlm.wonjoonpotfolio.data.useCase.GetIAmDataUseCase
 import com.vlm.wonjoonpotfolio.domain.ResultState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
@@ -11,11 +11,13 @@ import javax.inject.Inject
 
 
 data class IAmMainViewState(
-    val img : String?,
-    val basicIntro : String,
-    val isLoading : Boolean,
-    val projectList : List<String>,
-    val menu : List<String>
+    val img : Uri? = null,
+    val basicIntro : String = "",
+    val isLoading : Boolean = true,
+    val projectList : List<String> = listOf(),
+    val menu : List<String> = listOf(),
+    val testImgList : List<Uri?> = listOf(),
+    val imgLoading : Boolean = true
 )
 
 @HiltViewModel
@@ -41,16 +43,28 @@ constructor(
     )
 
     init {
-        getIAmDataUseCase().onEach { result ->
-            when(result){
+        getIAmDataUseCase("test.png").onEach { result ->
+                when(val text = result.first){
+                    is ResultState.Loading -> {
+                        _uiState.value = _uiState.value.copy(isLoading = true)
+                    }
+                    is ResultState.Success -> {
+                        _uiState.value = _uiState.value.copy(basicIntro = text.data.name, isLoading = false)
+                    }
+                    is ResultState.Error -> {
+                        _uiState.value = _uiState.value.copy(basicIntro = text.message , isLoading = true)
+                    }
+                }
+
+            when(val img = result.second) {
                 is ResultState.Loading -> {
-                    _uiState.value = _uiState.value.copy(isLoading = true)
+                    _uiState.value = _uiState.value.copy(imgLoading = true)
                 }
                 is ResultState.Success -> {
-                    _uiState.value = _uiState.value.copy(isLoading = false, basicIntro = result.data.name)
+                    _uiState.value = _uiState.value.copy(img = img.data)
                 }
                 is ResultState.Error -> {
-                    _uiState.value = _uiState.value.copy(isLoading = false, basicIntro = result.message)
+                    _uiState.value = _uiState.value.copy()
                 }
             }
         }.launchIn(viewModelScope)

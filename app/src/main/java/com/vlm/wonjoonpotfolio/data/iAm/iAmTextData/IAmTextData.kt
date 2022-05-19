@@ -1,9 +1,9 @@
-package com.vlm.wonjoonpotfolio.data.iAm
+package com.vlm.wonjoonpotfolio.data.iAm.iAmTextData
 
 import java.io.Serializable
 
 
-data class IAm(
+data class IAmTextData(
     val birthday : String,
     val school : String,
     val name : String,

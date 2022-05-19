@@ -1,10 +1,13 @@
 package com.vlm.wonjoonpotfolio.di
 
-import com.google.firebase.firestore.FirebaseFirestore
-import com.vlm.wonjoonpotfolio.data.iAm.GetIAmDataUseCase
-import com.vlm.wonjoonpotfolio.data.iAm.IAmRemoteDataSourceImpl
-import com.vlm.wonjoonpotfolio.data.iAm.IAmRemoteDataSource
-import com.vlm.wonjoonpotfolio.data.iAm.IAmRepository
+import com.vlm.wonjoonpotfolio.data.ImgData.ImgDataRepository
+import com.vlm.wonjoonpotfolio.data.ImgData.ImgDataSource
+import com.vlm.wonjoonpotfolio.data.ImgData.ImgDataSourceImpl
+import com.vlm.wonjoonpotfolio.data.useCase.GetIAmDataUseCase
+import com.vlm.wonjoonpotfolio.data.iAm.iAmTextData.IAmTextDataRemoteDataSourceImpl
+import com.vlm.wonjoonpotfolio.data.iAm.iAmTextData.IAmTextDataRemoteDataSource
+import com.vlm.wonjoonpotfolio.data.iAm.iAmTextData.IAmTextDataRepository
+import com.vlm.wonjoonpotfolio.data.useCase.GetMutlipleIAmDataUsecase
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
@@ -17,17 +20,35 @@ import dagger.hilt.android.components.ViewModelComponent
 object IAmDi{
     @Provides
     fun provideIamRepository(
-        remoteDataSource: IAmRemoteDataSourceImpl
-    ) : IAmRepository {
-        return IAmRepository(remoteDataSource)
+        remoteDataSource: IAmTextDataRemoteDataSourceImpl
+    ) : IAmTextDataRepository {
+        return IAmTextDataRepository(remoteDataSource)
+    }
+
+    @Provides
+    fun provideImgRepository(
+        imgDataSource: ImgDataSourceImpl
+    ) : ImgDataRepository{
+        return ImgDataRepository(imgDataSource)
     }
 
     @Provides
     fun provideGetIAmDataUseCase(
-        iAmRepository: IAmRepository,
+        iAmRepository: IAmTextDataRepository,
+        imgDataRepository: ImgDataRepository
     ) : GetIAmDataUseCase {
-        return GetIAmDataUseCase(iAmRepository)
+        return GetIAmDataUseCase(iAmRepository,imgDataRepository)
     }
+
+    @Provides
+    fun provideGetMultiIAmDataUseCase(
+        iAmRepository: IAmTextDataRepository,
+        imgDataRepository: ImgDataRepository
+    ) : GetMutlipleIAmDataUsecase {
+        return GetMutlipleIAmDataUsecase(iAmRepository,imgDataRepository)
+    }
+
+
 }
 
 @Module
@@ -35,15 +56,13 @@ object IAmDi{
 abstract class IAmDataSourceModule{
     @Binds
     abstract fun bindIAmDataSource(
-        iAmFirebaseApi:IAmRemoteDataSourceImpl
-    ) : IAmRemoteDataSource
+        iAmFirebaseApi: IAmTextDataRemoteDataSourceImpl
+    ) : IAmTextDataRemoteDataSource
+
+
+    @Binds
+    abstract fun bindImgDataSource(
+        imgDataSource: ImgDataSourceImpl
+    ) : ImgDataSource
 }
 
-@InstallIn(ViewModelComponent::class)
-@Module
-object FirebaseModule{
-    @Provides
-    fun provideFirebaseFirestore() : FirebaseFirestore {
-        return FirebaseFirestore.getInstance()
-    }
-}

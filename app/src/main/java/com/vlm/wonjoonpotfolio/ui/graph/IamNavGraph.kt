@@ -27,8 +27,6 @@ fun NavGraphBuilder.iAmNavGraph(
     startDestination : String,
     route: String
 ) {
-    val firebase = FirebaseStorage.getInstance()
-
     navigation(
         startDestination = startDestination,
         route = route
@@ -37,13 +35,6 @@ fun NavGraphBuilder.iAmNavGraph(
 
             val uiState by viewModel.uiState.collectAsState()
 
-            var (img,setimg) = remember {
-                mutableStateOf<Uri?>(null)
-            }
-
-            firebase.reference.child("test.png").downloadUrl.addOnSuccessListener {
-                setimg(it)
-            }
 
             Column() {
                 Text(text = "I_AM Main")
@@ -56,7 +47,7 @@ fun NavGraphBuilder.iAmNavGraph(
                     Text(text = "To_DETAIL")
                 }
 
-                AsyncImage(model = img, contentDescription = null)
+                AsyncImage(model = uiState.img, contentDescription = null)
             }
         }
         composable(Screen.Project.route){
