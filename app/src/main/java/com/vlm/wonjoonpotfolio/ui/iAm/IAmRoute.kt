@@ -179,11 +179,15 @@ fun ProjectItem(
         elevation = 2.dp,
         shape = RoundedCornerShape(10.dp),
     ) {
-        Row(
-            Modifier
+        Button(
+            onClick = { /*TODO*/ },
+            modifier = Modifier
                 .height(70.dp)
-                .width(150.dp)) {
-            AsyncImage(model = project.uri,
+                .width(150.dp)
+        ) {
+
+            AsyncImage(
+                model = project.uri,
                 contentDescription = null,
                 placeholder = painterResource(id = R.drawable.ic_launcher_background),
                 contentScale = ContentScale.Crop,
@@ -197,6 +201,7 @@ fun ProjectItem(
                 Text(text = project.long)
                 Text(text = project.briefEx)
             }
+
         }
     }
 }
