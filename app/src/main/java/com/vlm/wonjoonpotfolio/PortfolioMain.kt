@@ -1,13 +1,18 @@
 package com.vlm.wonjoonpotfolio
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.width
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.vlm.wonjoonpotfolio.domain.ModifierSetting.TOOL_ELEVATION
 import com.vlm.wonjoonpotfolio.ui.IamDestination.I_AM_MAIN
 import com.vlm.wonjoonpotfolio.ui.PortfolioDestination.CHAT
 import com.vlm.wonjoonpotfolio.ui.PortfolioDestination.EVALUATE
@@ -52,7 +57,13 @@ fun PortfolioMain() {
         Scaffold(
             modifier = Modifier,
             topBar = {
-                Text(text = currentRoute)
+                Surface(
+//                    elevation = TOOL_ELEVATION,
+                    modifier = Modifier.fillMaxWidth().background(Color.White),
+                ) {
+                    Text(text = currentRoute)
+                }
+
                      },
             bottomBar = {
                 if(appState.shouldShowBar){

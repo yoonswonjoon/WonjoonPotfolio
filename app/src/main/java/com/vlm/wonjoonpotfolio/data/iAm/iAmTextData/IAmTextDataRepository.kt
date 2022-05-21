@@ -5,8 +5,6 @@ import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
 class IAmTextDataRepository @Inject constructor(private val remoteDataSource: IAmTextDataRemoteDataSource) {
-    fun getMainView() : Flow<ResultState<IAmTextData>> = remoteDataSource.getIam()
-
-
+    suspend fun getMainView() : IAmTextData/*Flow<ResultState<IAmTextData>>*/ = remoteDataSource.getIam()
     suspend fun getListMainView(list: List<String>) : List<IAmTextData> = remoteDataSource.getList(list)
 }

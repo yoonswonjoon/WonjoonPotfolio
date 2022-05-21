@@ -5,7 +5,7 @@ import kotlinx.coroutines.flow.Flow
 
 interface IAmTextDataRemoteDataSource {
 //    fun test() : String
-    fun getIam() : Flow<ResultState<IAmTextData>>
+    suspend fun getIam() : IAmTextData//Flow<ResultState<IAmTextData>>
 
     suspend fun getList(list: List<String>) : List<IAmTextData>
 }

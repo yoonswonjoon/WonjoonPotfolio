@@ -12,7 +12,13 @@ class IAmTextDataRemoteDataSourceImpl
 constructor(
     private val firebase: FirebaseFirestore
 ) : IAmTextDataRemoteDataSource {
-    override fun getIam() = flow {
+    override suspend fun getIam(): IAmTextData {
+        val mainDoc = firebase.collection("iam").document("basicInfo")
+        val iAm = mainDoc.get().await().toObject(IAmTextData::class.java)
+        return iAm!!
+    }
+
+        /*flow {
         try {
             emit(ResultState.loading())
             kotlinx.coroutines.delay(1000) // 로딩하는 척 하기
@@ -24,7 +30,7 @@ constructor(
         } catch (e: Exception) {
             emit(ResultState.error(e.message ?: "i don't know why"))
         }
-    }
+    }*/
 
     override suspend fun getList(list: List<String>): List<IAmTextData> {
         val count = list.size
