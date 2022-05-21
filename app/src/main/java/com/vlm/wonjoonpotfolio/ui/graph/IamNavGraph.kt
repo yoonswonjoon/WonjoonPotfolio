@@ -17,6 +17,7 @@ import coil.compose.AsyncImage
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 import com.vlm.wonjoonpotfolio.Screen
+import com.vlm.wonjoonpotfolio.ui.iAm.IAmRoute
 import com.vlm.wonjoonpotfolio.ui.iAm.IAmViewModel
 import kotlinx.coroutines.flow.asStateFlow
 
@@ -36,19 +37,21 @@ fun NavGraphBuilder.iAmNavGraph(
             val uiState by viewModel.uiState.collectAsState()
 
 
-            Column() {
-                Text(text = "I_AM Main")
-                if(uiState.isLoading){
-                    Text(text = "로딩중입니당")
-                }else{
-                    Text(text = uiState.basicIntro)
-                }
-                TextButton(onClick = { navHostController.navigate(Screen.Project.route) }) {
-                    Text(text = "To_DETAIL")
-                }
+            IAmRoute(viewModel = viewModel, navHostController = navHostController)
 
-                AsyncImage(model = uiState.img, contentDescription = null)
-            }
+//            Column() {
+//                Text(text = "I_AM Main")
+//                if(uiState.isLoading){
+//                    Text(text = "로딩중입니당")
+//                }else{
+//                    Text(text = uiState.basicIntro)
+//                }
+//                TextButton(onClick = { navHostController.navigate(Screen.Project.route) }) {
+//                    Text(text = "To_DETAIL")
+//                }
+//
+//                AsyncImage(model = uiState.img, contentDescription = null)
+//            }
         }
         composable(Screen.Project.route){
             Text(text = "Project Detail")

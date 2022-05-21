@@ -42,6 +42,7 @@ fun PortfolioNavGraph(
             startDestination = Screen.IAmMain.route,
             route = PortfolioDestination.I_AM
         )
+
         composable(Screen.HistoryMain.route){
             val uiState by historyViewModel.uiState.collectAsState()
             Text(text = "@")

@@ -51,7 +51,9 @@ fun PortfolioMain() {
 
         Scaffold(
             modifier = Modifier,
-            topBar = { Text(text = currentRoute) },
+            topBar = {
+                Text(text = currentRoute)
+                     },
             bottomBar = {
                 if(appState.shouldShowBar){
                     PortfolioBottomNav(

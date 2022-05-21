@@ -43,7 +43,7 @@ constructor(
     )
 
     init {
-        getIAmDataUseCase("test.png").onEach { result ->
+        getIAmDataUseCase("wj.png").onEach { result ->
                 when(val text = result.first){
                     is ResultState.Loading -> {
                         _uiState.value = _uiState.value.copy(isLoading = true)
