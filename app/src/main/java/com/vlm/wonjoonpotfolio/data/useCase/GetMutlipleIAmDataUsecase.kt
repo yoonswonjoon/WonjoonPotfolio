@@ -6,8 +6,10 @@ import com.vlm.wonjoonpotfolio.data.iAm.iAmTextData.IAmTextDataRepository
 import com.vlm.wonjoonpotfolio.domain.ResultState
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flow
+import okhttp3.internal.wait
 import javax.inject.Inject
 
 class GetMutlipleIAmDataUsecase

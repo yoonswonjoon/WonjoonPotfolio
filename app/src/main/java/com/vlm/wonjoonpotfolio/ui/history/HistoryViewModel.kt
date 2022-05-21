@@ -3,15 +3,10 @@ package com.vlm.wonjoonpotfolio.ui.history
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.vlm.wonjoonpotfolio.data.history.TestHistoryClass
-import com.vlm.wonjoonpotfolio.data.useCase.GetIAmDataUseCase
 import com.vlm.wonjoonpotfolio.data.useCase.GetMutlipleIAmDataUsecase
 import com.vlm.wonjoonpotfolio.domain.ResultState
-import com.vlm.wonjoonpotfolio.ui.iAm.IAmMainViewState
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
