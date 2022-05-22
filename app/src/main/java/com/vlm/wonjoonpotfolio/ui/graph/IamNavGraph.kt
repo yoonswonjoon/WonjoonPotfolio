@@ -2,6 +2,7 @@ package com.vlm.wonjoonpotfolio.ui.graph
 
 import android.net.Uri
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.material.ScaffoldState
 import androidx.compose.material.Text
 import androidx.compose.material.TextButton
@@ -9,6 +10,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
@@ -16,45 +18,37 @@ import androidx.navigation.navigation
 import coil.compose.AsyncImage
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
+import com.vlm.wonjoonpotfolio.PortfolioAppState
 import com.vlm.wonjoonpotfolio.Screen
 import com.vlm.wonjoonpotfolio.ui.iAm.IAmRoute
 import com.vlm.wonjoonpotfolio.ui.iAm.IAmViewModel
+import com.vlm.wonjoonpotfolio.ui.iAm.ProjectDetailRoute
 import kotlinx.coroutines.flow.asStateFlow
 
 fun NavGraphBuilder.iAmNavGraph(
-    navHostController: NavHostController,
+    appState: PortfolioAppState,
     viewModel: IAmViewModel,
-    scaffoldState: ScaffoldState,
     startDestination : String,
-    route: String
+    route: String,
 ) {
     navigation(
         startDestination = startDestination,
         route = route
     ){
         composable(Screen.IAmMain.route){
+            IAmRoute(
+                viewModel = viewModel,
+                navHostController = appState.navHostController,
+                scaffoldState = appState.scaffoldState,
+                toProject = {
+                    viewModel.selectProject(it)
+                    appState.navigateToProjectDetail(it)
+                }
+            )
 
-            val uiState by viewModel.uiState.collectAsState()
-
-
-            IAmRoute(viewModel = viewModel, navHostController = navHostController)
-
-//            Column() {
-//                Text(text = "I_AM Main")
-//                if(uiState.isLoading){
-//                    Text(text = "로딩중입니당")
-//                }else{
-//                    Text(text = uiState.basicIntro)
-//                }
-//                TextButton(onClick = { navHostController.navigate(Screen.Project.route) }) {
-//                    Text(text = "To_DETAIL")
-//                }
-//
-//                AsyncImage(model = uiState.img, contentDescription = null)
-//            }
         }
         composable(Screen.Project.route){
-            Text(text = "Project Detail")
+            ProjectDetailRoute(viewModel = viewModel)
         }
     }
 }
