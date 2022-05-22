@@ -10,26 +10,31 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import javax.inject.Inject
 
-data class ProjectParticipant(
-    val list : List<Uri> = listOf<Uri>()
+data class ProjectViewState(
+    val list : List<UserForUi> = listOf(),
+    val selectedUser : UserForUi? = null
 )
 
 @HiltViewModel
 class ProjectViewModel @Inject constructor(private val getUserUseCase: GetUserUseCase) : ViewModel(){
-    private val _userList = MutableStateFlow(
-        listOf<UserForUi>()
+    private val _viewState = MutableStateFlow(
+        ProjectViewState()
     )
 
-    val userList get() = _userList.stateIn(
+    val viewState get() = _viewState.stateIn(
         viewModelScope,
         SharingStarted.Eagerly,
-        _userList.value
+        _viewState.value
     )
+
 
     fun getUserUriList(list : List<String>){
         getUserUseCase(list).onEach { users->
-            _userList.value = users
+            _viewState.value = _viewState.value.copy(list = users)
         }.launchIn(viewModelScope)
     }
 
+    fun selectUser(userForUi: UserForUi){
+        _viewState.value = _viewState.value.copy(selectedUser = userForUi)
+    }
 }

@@ -6,7 +6,8 @@ data class User(
     val eid : String = "",
     val name : String = "",
     val nickname: String = "",
-    val uri : String = ""
+    val uri : String = "",
+    val phone : String = " "
 ) {
     constructor() : this("")
 
@@ -15,7 +16,8 @@ data class User(
             eid = this.eid,
             name = this.name,
             nickname = this.nickname,
-            uri = uri
+            uri = uri,
+            phone = this.phone
         )
     }
 }
@@ -24,7 +26,8 @@ data class UserForUi(
     val eid : String = "",
     val name : String = "",
     val nickname: String = "",
-    val uri : Uri? = null
+    val uri : Uri? = null,
+    val phone : String = ""
 ) {
 
 }
