@@ -4,10 +4,13 @@ import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.vlm.wonjoonpotfolio.data.project.ProjectData
+import com.vlm.wonjoonpotfolio.data.useCase.GetAllProjects
 import com.vlm.wonjoonpotfolio.data.useCase.GetIAmDataUseCase
 import com.vlm.wonjoonpotfolio.domain.ResultState
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 
@@ -21,20 +24,17 @@ data class IAmMainViewState(
     val eid: String = "",
     val isLoading : Boolean = true,
     val projectList : List<ProjectData> = listOf(
-        ProjectData("나이만", "2021.03~","위치기반 소개팅 어플"),
-        ProjectData("나이만", "2021.03~","위치기반 소개팅 어플"),
-        ProjectData("나이만", "2021.03~","위치기반 소개팅 어플"),
-        ProjectData("나이만", "2021.03~","위치기반 소개팅 어플"),
-        ProjectData("나이만", "2021.03~","위치기반 소개팅 어플"),
-        ProjectData("나이만", "2021.03~","위치기반 소개팅 어플"),
-        ProjectData("나이만", "2021.03~","위치기반 소개팅 어플"),
-        ProjectData("나이만", "2021.03~","위치기반 소개팅 어플"),
-        ProjectData("나이만", "2021.03~","위치기반 소개팅 어플"),
-        ProjectData("나이만", "2021.03~","위치기반 소개팅 어플")
+        ProjectData(name = "나이만", long = "2021.03~", briefEx = "위치기반 소개팅 어플"),
+        ProjectData(name = "나이만", long = "2021.03~", briefEx = "위치기반 소개팅 어플"),
+        ProjectData(name = "나이만", long = "2021.03~", briefEx = "위치기반 소개팅 어플"),
+        ProjectData(name = "나이만", long = "2021.03~", briefEx = "위치기반 소개팅 어플"),
+        ProjectData(name = "나이만", long = "2021.03~", briefEx = "위치기반 소개팅 어플"),
     ),
     val menu : List<String> = listOf(),
     val testImgList : List<Uri?> = listOf(),
-    val imgLoading : Boolean = true
+    val imgLoading : Boolean = true,
+    val scrollListener : Int = 0,
+    val selectedProject : ProjectData? = null
 )
 
 @HiltViewModel
@@ -42,6 +42,7 @@ class IAmViewModel
 @Inject
 constructor(
     private val getIAmDataUseCase: GetIAmDataUseCase,
+    private val getAllProjects: GetAllProjects
     ) : ViewModel() {
     private val _uiState = MutableStateFlow(
         IAmMainViewState(
@@ -60,6 +61,14 @@ constructor(
     )
 
     init {
+        getAllProjects().onEach {  resultState ->
+            when(resultState){
+                is ResultState.Success->{
+                    _uiState.value = _uiState.value.copy(projectList = resultState.data)
+                }
+            }
+        }.launchIn(viewModelScope)
+
         getIAmDataUseCase("wj.png").onEach { result ->
             when(result){
                 is ResultState.Loading -> {
@@ -88,4 +97,9 @@ constructor(
         }.launchIn(viewModelScope)
     }
 
+    fun selectProject(projectData: ProjectData){
+        _uiState.value = _uiState.value.copy(
+            selectedProject = projectData
+        )
+    }
 }

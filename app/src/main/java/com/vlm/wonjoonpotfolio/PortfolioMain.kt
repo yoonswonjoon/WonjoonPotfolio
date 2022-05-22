@@ -1,17 +1,25 @@
 package com.vlm.wonjoonpotfolio
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.ArrowBack
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
+import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.vlm.wonjoonpotfolio.data.project.ProjectData
 import com.vlm.wonjoonpotfolio.domain.ModifierSetting.TOOL_ELEVATION
 import com.vlm.wonjoonpotfolio.ui.IamDestination.I_AM_MAIN
 import com.vlm.wonjoonpotfolio.ui.PortfolioDestination.CHAT
@@ -57,11 +65,23 @@ fun PortfolioMain() {
         Scaffold(
             modifier = Modifier,
             topBar = {
-                Surface(
-//                    elevation = TOOL_ELEVATION,
-                    modifier = Modifier.fillMaxWidth().background(Color.White),
+                TopAppBar(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(Color.White),
+                    
                 ) {
+                    Spacer(modifier = Modifier.width(10.dp))
+                    if(!appState.shouldShowBar){
+                        Icon(Icons.Rounded.ArrowBack, null,modifier = Modifier.clickable {
+                            appState.navHostController.popBackStack()
+                        })
+                    }
                     Text(text = currentRoute)
+                    if(currentRoute == Screen.Project.route){
+                        Spacer(modifier = Modifier.width(15.dp))
+                        Text(text = appState.detailProject)
+                    }
                 }
 
                      },
@@ -74,11 +94,12 @@ fun PortfolioMain() {
                     )
                 }
             },
-            scaffoldState = appState.scaffoldState
+            scaffoldState = appState.scaffoldState,
         ) {
+
             PortfolioNavGraph(
-                appState.navHostController,
-                appState.scaffoldState
+                appState,
+                modifier = Modifier.padding(it)
             )
         }
     }
@@ -107,6 +128,10 @@ class PortfolioAppState(
     val scaffoldState: ScaffoldState,
     val navHostController: NavHostController,
 ){
+
+    var detailProject = ""
+    fun setDetailProjectName(s : String) { detailProject = s}
+
     val rootNav = listOf<String>(I_AM,HISTORY, CHAT, EVALUATE, SETTING)
     val mainNavScreen = listOf(Screen.IAmMain,Screen.HistoryMain, Screen.ChatMain, Screen.EvaluateMain, Screen.SettingMain)
 
@@ -123,6 +148,17 @@ class PortfolioAppState(
                     saveState = true
                 }
             }
+        }
+    }
+
+    fun navigateToProjectDetail(projectData: ProjectData){
+        setDetailProjectName(projectData.name)
+        navHostController.navigate(Screen.Project.route){
+            popUpTo(navHostController.graph.findStartDestination().id) {
+                saveState = true
+            }
+            launchSingleTop = true
+            restoreState = true
         }
     }
 }

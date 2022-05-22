@@ -1,6 +1,7 @@
 package com.vlm.wonjoonpotfolio.ui
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -16,6 +17,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import coil.compose.AsyncImage
 import com.vlm.wonjoonpotfolio.GraphList
+import com.vlm.wonjoonpotfolio.PortfolioAppState
 import com.vlm.wonjoonpotfolio.Screen
 import com.vlm.wonjoonpotfolio.ui.graph.iAmNavGraph
 import com.vlm.wonjoonpotfolio.ui.history.HistoryViewModel
@@ -23,24 +25,22 @@ import com.vlm.wonjoonpotfolio.ui.iAm.IAmViewModel
 
 @Composable
 fun PortfolioNavGraph(
-    navController: NavHostController,
-    scaffoldState: ScaffoldState,
+    appState: PortfolioAppState,
     modifier : Modifier =  Modifier
 ) {
     val iamViewModel : IAmViewModel = viewModel()
     val historyViewModel : HistoryViewModel = viewModel()
     NavHost(
-        navController = navController,
+        navController = appState.navHostController,
         startDestination = PortfolioDestination.I_AM,
         route = GraphList.RootGraph.route,
         modifier = modifier,
     ){
         iAmNavGraph(
-            navHostController = navController,
+            appState = appState,
             viewModel = iamViewModel,
-            scaffoldState = scaffoldState,
             startDestination = Screen.IAmMain.route,
-            route = PortfolioDestination.I_AM
+            route = PortfolioDestination.I_AM,
         )
 
         composable(Screen.HistoryMain.route){
