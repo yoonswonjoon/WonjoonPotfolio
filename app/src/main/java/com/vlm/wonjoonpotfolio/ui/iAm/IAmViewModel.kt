@@ -15,26 +15,27 @@ import javax.inject.Inject
 
 
 data class IAmMainViewState(
-    val img : Uri? = null,
+    val img: Uri? = null,
     val name: String = "",
     val birthday: String = "",
     val introduce: String = "",
     val school: String = "",
     val phone: String = "",
+    val before: String = "",
     val eid: String = "",
-    val isLoading : Boolean = true,
-    val projectList : List<ProjectData> = listOf(
+    val isLoading: Boolean = true,
+    val projectList: List<ProjectData> = listOf(
         ProjectData(name = "나이만", long = "2021.03~", briefEx = "위치기반 소개팅 어플"),
         ProjectData(name = "나이만", long = "2021.03~", briefEx = "위치기반 소개팅 어플"),
         ProjectData(name = "나이만", long = "2021.03~", briefEx = "위치기반 소개팅 어플"),
         ProjectData(name = "나이만", long = "2021.03~", briefEx = "위치기반 소개팅 어플"),
         ProjectData(name = "나이만", long = "2021.03~", briefEx = "위치기반 소개팅 어플"),
     ),
-    val menu : List<String> = listOf(),
-    val testImgList : List<Uri?> = listOf(),
-    val imgLoading : Boolean = true,
-    val scrollListener : Int = 0,
-    val selectedProject : ProjectData? = null
+    val menu: List<String> = listOf(),
+    val testImgList: List<Uri?> = listOf(),
+    val imgLoading: Boolean = true,
+    val scrollListener: Int = 0,
+    val selectedProject: ProjectData? = null
 )
 
 @HiltViewModel
@@ -43,7 +44,7 @@ class IAmViewModel
 constructor(
     private val getIAmDataUseCase: GetIAmDataUseCase,
     private val getAllProjects: GetAllProjects
-    ) : ViewModel() {
+) : ViewModel() {
     private val _uiState = MutableStateFlow(
         IAmMainViewState(
             img = null,
@@ -54,6 +55,9 @@ constructor(
         )
     )
 
+    private var _selectedProject: ProjectData? = null
+    val selectedProject get() = _selectedProject
+
     val uiState = _uiState.stateIn(
         viewModelScope,
         SharingStarted.Eagerly,
@@ -61,16 +65,16 @@ constructor(
     )
 
     init {
-        getAllProjects().onEach {  resultState ->
-            when(resultState){
-                is ResultState.Success->{
+        getAllProjects().onEach { resultState ->
+            when (resultState) {
+                is ResultState.Success -> {
                     _uiState.value = _uiState.value.copy(projectList = resultState.data)
                 }
             }
         }.launchIn(viewModelScope)
 
         getIAmDataUseCase("wj.png").onEach { result ->
-            when(result){
+            when (result) {
                 is ResultState.Loading -> {
                     _uiState.value = _uiState.value.copy(isLoading = true)
                 }
@@ -83,7 +87,8 @@ constructor(
                         school = result.data.school,
                         phone = result.data.phone,
                         eid = result.data.eid,
-                        isLoading = result.data.isLoading,
+                        before = result.data.before,
+                        isLoading = false,
                         projectList = result.data.projectList,
                         menu = result.data.menu,
                         testImgList = result.data.testImgList,
@@ -91,13 +96,14 @@ constructor(
                     )
                 }
                 is ResultState.Error -> {
-                    _uiState.value = _uiState.value.copy(name = result.message , isLoading = true)
+                    _uiState.value = _uiState.value.copy(name = result.message, isLoading = false)
                 }
             }
         }.launchIn(viewModelScope)
     }
 
-    fun selectProject(projectData: ProjectData){
+    fun selectProject(projectData: ProjectData) {
+        _selectedProject = projectData
         _uiState.value = _uiState.value.copy(
             selectedProject = projectData
         )

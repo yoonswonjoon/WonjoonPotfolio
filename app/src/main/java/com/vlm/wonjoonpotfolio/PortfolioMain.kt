@@ -1,5 +1,7 @@
 package com.vlm.wonjoonpotfolio
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Spacer
@@ -53,6 +55,7 @@ sealed class GraphList(val route : String){
     object SettingGraph :GraphList("Setting")
 }
 
+@RequiresApi(Build.VERSION_CODES.N)
 @Composable
 fun PortfolioMain() {
     WonjoonPotfolioTheme{

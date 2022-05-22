@@ -1,18 +1,16 @@
 package com.vlm.wonjoonpotfolio.ui
 
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.ScaffoldState
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import coil.compose.AsyncImage
@@ -23,6 +21,7 @@ import com.vlm.wonjoonpotfolio.ui.graph.iAmNavGraph
 import com.vlm.wonjoonpotfolio.ui.history.HistoryViewModel
 import com.vlm.wonjoonpotfolio.ui.iAm.IAmViewModel
 
+@RequiresApi(Build.VERSION_CODES.N)
 @Composable
 fun PortfolioNavGraph(
     appState: PortfolioAppState,

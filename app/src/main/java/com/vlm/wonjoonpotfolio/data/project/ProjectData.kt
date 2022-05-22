@@ -27,11 +27,11 @@ data class ProjectDao(
          briefEx  = this.briefEx,
          uri = uri, // !!
          uriList = listOf(), // !!
-         downloadUri  = null,
+         downloadUri  = this.downloadUri,
          stacks  = this.stacks,
-         participant = "()",
+         participant = this.participant,
          projectDetail = this.projectDetail ,
-         difficult = listOf(),
+         difficult = this.difficult,
         )
     }
 }
@@ -43,11 +43,11 @@ data class ProjectData(
     val briefEx: String = "",
     val uri : Uri? = null,
     val uriList : List<Uri?> = listOf(),
-    val downloadUri : Uri? = null,
+    val downloadUri : String? = null,
     val stacks : String = "",
-    val participant : String = "",
+    val participant : List<String> = listOf(),
     val projectDetail : String = "",
-    val difficult : List<Pair<String,String>> = listOf(),
+    val difficult : Map<String,String> = mapOf(),
     val comments : List<WjComment> = listOf()
 ) {
 }

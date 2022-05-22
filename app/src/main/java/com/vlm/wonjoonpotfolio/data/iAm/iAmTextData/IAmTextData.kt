@@ -10,12 +10,14 @@ data class IAmTextData(
     val name : String,
     val introduce : String,
     val eid : String,
+    val before : String,
     val phone : String
 ) : Serializable {
-    constructor() : this("","","","","","")
+    constructor() : this("","","","","","","")
 
     fun toIAmViewState() : IAmMainViewState{
         return IAmMainViewState(
+            before = before,
             name = name,
             birthday = birthday,
             introduce = introduce,

@@ -42,20 +42,18 @@ fun IAmRoute(
     toProject : (ProjectData) -> Unit,
 ) {
     val viewState by viewModel.uiState.collectAsState()
-    var isLoading by remember {
-        mutableStateOf(true)
+    val (rememberLoading,onShowed) = remember{
+        mutableStateOf(viewState.isLoading)
     }
-    if(isLoading){
-        rememberCoroutineScope().launch {
-            scaffoldState.snackbarHostState.showSnackbar(
-                "로딩중입니다"
-            )
-            isLoading = false
-        }
-    }else{
-        rememberCoroutineScope().launch {
-        }
-    }
+    val coroutineScope = rememberCoroutineScope()
+//    if(rememberLoading){
+//        coroutineScope.launch {
+//            scaffoldState.snackbarHostState.showSnackbar(
+//                "로딩중입니다"
+//            )
+//        }
+//        onShowed(false)
+//    }
 
     val lazyListState = rememberLazyListState()
     IAmRoute(viewState = viewState, lazyListState = lazyListState,toProject = toProject )
@@ -77,6 +75,7 @@ fun IAmRoute(
     LazyColumn(
         state = lazyListState,
         contentPadding = PaddingValues(HORIZONTAL_SPACE),
+        verticalArrangement = Arrangement.spacedBy(15.dp)
     ){
         item {
             TopMainView(
@@ -94,7 +93,7 @@ fun IAmRoute(
             ItemForText(
                 modifier = Modifier.defaultMinSize(150.dp),
                 title = "경력",
-                contents = viewState.introduce.replace("\\n","\n")
+                contents = viewState.before.replace("\\n","\n")
             )
 
         }
@@ -265,26 +264,29 @@ fun ProjectItem(
             onClick = {
                       toProject(project)
             },
-
         ) {
             Row(
                 Modifier
-                    .height(70.dp)
-                    .width(150.dp)) {
+                    .height(90.dp)
+                    .width(200.dp)) {
 
                 AsyncImage(model = project.uri,
                     contentDescription = null,
                     placeholder = painterResource(id = R.drawable.ic_launcher_background),
                     contentScale = ContentScale.Crop,
                     modifier = Modifier
-                        .height(70.dp)
-                        .width(60.dp)
+                        .height(90.dp)
+                        .width(70.dp)
                 )
                 Spacer(modifier = Modifier.width(10.dp))
-                Column() {
-                    Text(text = project.name)
-                    Text(text = project.long)
-                    Text(text = project.briefEx)
+                Column(
+                    modifier = Modifier.fillMaxHeight(),
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    Text(text = project.name, style = MaterialTheme.typography.body1)
+                    Spacer(modifier = Modifier.height(5.dp))
+                    Text(text = project.long, style = MaterialTheme.typography.caption)
+                    Text(text = project.briefEx ,style = MaterialTheme.typography.caption)
                 }
             }
         }

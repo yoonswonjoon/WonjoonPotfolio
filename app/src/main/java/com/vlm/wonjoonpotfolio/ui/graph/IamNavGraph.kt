@@ -1,30 +1,21 @@
 package com.vlm.wonjoonpotfolio.ui.graph
 
-import android.net.Uri
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.material.ScaffoldState
-import androidx.compose.material.Text
-import androidx.compose.material.TextButton
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.navigation.NavGraph.Companion.findStartDestination
+import android.os.Build
+import androidx.annotation.RequiresApi
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavGraphBuilder
-import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
+import androidx.navigation.navArgument
 import androidx.navigation.navigation
-import coil.compose.AsyncImage
-import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.storage.FirebaseStorage
 import com.vlm.wonjoonpotfolio.PortfolioAppState
 import com.vlm.wonjoonpotfolio.Screen
 import com.vlm.wonjoonpotfolio.ui.iAm.IAmRoute
 import com.vlm.wonjoonpotfolio.ui.iAm.IAmViewModel
 import com.vlm.wonjoonpotfolio.ui.iAm.ProjectDetailRoute
-import kotlinx.coroutines.flow.asStateFlow
+import com.vlm.wonjoonpotfolio.ui.iAm.ProjectViewModel
 
+@RequiresApi(Build.VERSION_CODES.N)
 fun NavGraphBuilder.iAmNavGraph(
     appState: PortfolioAppState,
     viewModel: IAmViewModel,
@@ -47,8 +38,12 @@ fun NavGraphBuilder.iAmNavGraph(
             )
 
         }
-        composable(Screen.Project.route){
-            ProjectDetailRoute(viewModel = viewModel)
+        composable(
+            Screen.Project.route,
+        ){
+            val projectViewModel = hiltViewModel<ProjectViewModel>()
+//            projectViewModel.getUserList(viewModel.selectedProject?.participant?: listOf())
+            ProjectDetailRoute(viewModel = viewModel,appState = appState, projectViewModel = projectViewModel)
         }
     }
 }

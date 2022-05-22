@@ -12,6 +12,9 @@ import com.vlm.wonjoonpotfolio.data.project.ProjectDataSourceImpl
 import com.vlm.wonjoonpotfolio.data.project.ProjectRepository
 import com.vlm.wonjoonpotfolio.data.useCase.GetAllProjects
 import com.vlm.wonjoonpotfolio.data.useCase.GetMutlipleIAmDataUsecase
+import com.vlm.wonjoonpotfolio.data.useCase.GetUserUseCase
+import com.vlm.wonjoonpotfolio.data.user.UserDataSource
+import com.vlm.wonjoonpotfolio.data.user.UserRepository
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
@@ -53,6 +56,22 @@ object IAmDi{
     }
 
     @Provides
+    fun provideUserDataSource(
+        firebase : FirebaseFirestore
+    ) = UserDataSource(firebase)
+
+    @Provides
+    fun providesUserRepository(
+        userDataSource: UserDataSource
+    ) = UserRepository(userDataSource)
+
+    @Provides
+    fun providesGetUserUseCase(
+        userRepository: UserRepository,
+        imgDataRepository: ImgDataRepository
+    ) = GetUserUseCase(userRepository,imgDataRepository)
+
+    @Provides
     fun provideProjectDataSource(
         firebase : FirebaseFirestore
     ) = ProjectDataSourceImpl(firebase)
@@ -67,6 +86,8 @@ object IAmDi{
         projectRepository: ProjectRepository,
         imgDataRepository: ImgDataRepository
     ) = GetAllProjects(projectRepository,imgDataRepository)
+
+
 }
 
 @Module
