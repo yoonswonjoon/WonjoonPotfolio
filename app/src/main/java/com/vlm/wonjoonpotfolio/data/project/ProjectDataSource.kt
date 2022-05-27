@@ -5,10 +5,10 @@ import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
 class ProjectDataSourceImpl @Inject constructor(private val firebase: FirebaseFirestore) {
-    suspend fun getAllProject(): List<ProjectDao> {
+    suspend fun getAllProject(): List<ProjectDto> {
         val doc = firebase.collection("project").get().await()
         return doc.documents.map {
-            it.toObject(ProjectDao::class.java)!!
+            it.toObject(ProjectDto::class.java)!!
         }
     }
 }

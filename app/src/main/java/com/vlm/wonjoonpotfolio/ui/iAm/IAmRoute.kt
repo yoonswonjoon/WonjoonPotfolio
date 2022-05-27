@@ -316,30 +316,32 @@ fun ItemForText(
     titleColor: Color = RedColor,
     contentsColor: Color = BlackColor,
     titleStyle : TextStyle = MaterialTheme.typography.h6,
-    contentsStyle: TextStyle = MaterialTheme.typography.body1
+    contentsStyle: TextStyle = MaterialTheme.typography.body1,
+    visibility : Boolean = true
 ){
-    Column(
-        modifier= modifier,
-        verticalArrangement = Arrangement.spacedBy(10.dp)
-    ) {
-        TextWithSubTile(
-            text = title,
-            color = titleColor,
-            modifier = Modifier,
-            style = titleStyle
-        )
-        Row() {
-            Spacer(modifier = Modifier.width(10.dp))
-            TextWithMainBody(
-                text = contents,
-                color = contentsColor,
-                style = contentsStyle
+    if (visibility){
+        Column(
+            modifier= modifier,
+            verticalArrangement = Arrangement.spacedBy(10.dp)
+        ) {
+            TextWithSubTile(
+                text = title,
+                color = titleColor,
+                modifier = Modifier,
+                style = titleStyle
             )
+            Row() {
+                Spacer(modifier = Modifier.width(10.dp))
+                TextWithMainBody(
+                    text = contents,
+                    color = contentsColor,
+                    style = contentsStyle
+                )
+            }
+
+
         }
-
-
     }
-
 }
 
 

@@ -3,6 +3,7 @@ package com.vlm.wonjoonpotfolio.ui.iAm
 import android.content.Intent
 import android.net.Uri
 import android.os.Build
+import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -25,6 +26,8 @@ import com.vlm.wonjoonpotfolio.R
 import com.vlm.wonjoonpotfolio.data.user.User
 import com.vlm.wonjoonpotfolio.data.user.UserForUi
 import com.vlm.wonjoonpotfolio.domain.ModifierSetting.HORIZONTAL_SPACE
+import com.vlm.wonjoonpotfolio.domain.addUriToString
+import com.vlm.wonjoonpotfolio.domain.commaSplit
 import com.vlm.wonjoonpotfolio.ui.component.*
 import kotlinx.coroutines.launch
 
@@ -45,28 +48,30 @@ fun ProjectDetailRoute(
     val bottomSheetScaffoldState = rememberModalBottomSheetState(
         ModalBottomSheetValue.Hidden
     )
-    LaunchedEffect(true){
+    LaunchedEffect(true) {
         projectViewModel.getUserUriList(userListOperator!!)
     }
 
     ModalBottomSheetLayout(
-        sheetContent = { ProjectBottomSheet(
-            eid = {
-                val intent = Intent(Intent.ACTION_SENDTO).apply {
-                    data = Uri.parse("mailto:$it")
-                }
-                context.startActivity(intent)
-            },
-            phone = {
-                val intent = Intent(Intent.ACTION_DIAL).apply {
-                    data = Uri.parse("tel:$it")
-                }
-                context.startActivity(intent)
-            },
-            user = viewState.selectedUser
-        ) },
+        sheetContent = {
+            ProjectBottomSheet(
+                eid = {
+                    val intent = Intent(Intent.ACTION_SENDTO).apply {
+                        data = Uri.parse("mailto:$it")
+                    }
+                    context.startActivity(intent)
+                },
+                phone = {
+                    val intent = Intent(Intent.ACTION_DIAL).apply {
+                        data = Uri.parse("tel:$it")
+                    }
+                    context.startActivity(intent)
+                },
+                user = viewState.selectedUser
+            )
+        },
         sheetState = bottomSheetScaffoldState,
-        sheetShape = RoundedCornerShape(100f,100f,0f,0f)
+        sheetShape = RoundedCornerShape(100f, 100f, 0f, 0f)
     ) {
         Column(
             Modifier
@@ -95,15 +100,15 @@ fun ProjectDetailRoute(
 
                     OutlinedButton(
                         onClick = {
-                            if(uiState?.downloadUri =="this"){
+                            if (uiState?.downloadUri == "this") {
                                 coroutineScope.launch {
                                     appState.scaffoldState.snackbarHostState.showSnackbar(
                                         "현재어플입니다."
                                     )
                                 }
-                            }else if(uiState?.downloadUri == null){
+                            } else if (uiState?.downloadUri == null) {
 
-                            }else{
+                            } else {
                                 val intent = Intent(Intent.ACTION_VIEW).apply {
                                     data = Uri.parse(
                                         uiState.downloadUri
@@ -118,6 +123,18 @@ fun ProjectDetailRoute(
                     }
                     TextWithMainBody(text = uiState?.long ?: "알 수 없음.")
                     TextWithMainBody(text = "적용 스텍")
+                    TextDescribeStacksApp(
+                        title = "ddd",
+                        text = uiState?.projectStatecks?.stacks?.commaSplit()?.map { it.addUriToString() }?: listOf(),
+                        onClick = {
+                            val intent = Intent(Intent.ACTION_VIEW).apply {
+                                data = Uri.parse(
+                                    it
+                                )
+                            }
+                            context.startActivity(intent)
+                        }
+                    )
                     TextWithMainBody(text = "제작인원")
                     Row(horizontalArrangement = Arrangement.spacedBy(5.dp)) {
                         viewState.list.forEach {
@@ -131,7 +148,7 @@ fun ProjectDetailRoute(
                     }
                 }
             }
-            TextWithSubTile(text = "프로젝트 소개", color = RedColor, modifier = Modifier.padding(5.dp))
+            TextWithSubTile(text = "프로젝트 소개", color = RedColor, modifier = Modifier.padding(5.dp),)
             TextWithSubTile(text = "관련 사진", color = RedColor, modifier = Modifier.padding(5.dp))
             TextWithSubTile(text = "힘들었던 점", color = RedColor, modifier = Modifier.padding(5.dp))
             Column() {
@@ -175,9 +192,15 @@ fun ProjectBottomSheet(user: UserForUi?, eid: (String) -> Unit, phone : (String)
         Spacer(modifier = Modifier.height(3.dp))
         TextWithSubTile(text = user?.nickname?: "None", color = BlueColor,modifier = Modifier.padding(10.dp))
         Divider()
-        TextWithSubTile(text = "전화하기", modifier = Modifier.fillMaxWidth().clickable { phone(user?.phone?:"") }.padding(10.dp))
+        TextWithSubTile(text = "전화하기", modifier = Modifier
+            .fillMaxWidth()
+            .clickable { phone(user?.phone ?: "") }
+            .padding(10.dp))
         Divider()
-        TextWithSubTile(text = "메일 보내기", modifier = Modifier.fillMaxWidth().clickable { eid(user?.eid?:"") }.padding(10.dp))
+        TextWithSubTile(text = "메일 보내기", modifier = Modifier
+            .fillMaxWidth()
+            .clickable { eid(user?.eid ?: "") }
+            .padding(10.dp))
         Divider()
     }
 }
