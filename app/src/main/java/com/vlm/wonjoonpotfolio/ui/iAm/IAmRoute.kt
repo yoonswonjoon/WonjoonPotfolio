@@ -298,7 +298,7 @@ fun ItemForText(
     contents : String,
     titleColor: Color = RedColor,
     contentsColor: Color = BlackColor,
-    titleStyle : TextStyle = MaterialTheme.typography.h6,
+    titleStyle : TextStyle = MaterialTheme.typography.subtitle2,
     contentsStyle: TextStyle = MaterialTheme.typography.body1,
     visibility : Boolean = true
 ){
@@ -321,7 +321,7 @@ fun ItemForText(
                     style = contentsStyle
                 )
             }
-
+            Spacer(modifier = Modifier.height(5.dp))
 
         }
     }

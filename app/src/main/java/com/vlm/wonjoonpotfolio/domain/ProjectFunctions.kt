@@ -10,13 +10,15 @@ fun String.addUriToString(): ProjectStringType {
             ProjectStringType.LinkedString(
                 name = this,
                 uri = StringConnectList.uriMap[this],
-                color = StringConnectList.colorMap[this] ?: Color.Black
+                color = StringConnectList.colorMap[this]?.first ?: Color.Black,
+                antiColor = StringConnectList.colorMap[this]?.second ?: Color.White
             )
         }catch (e:Exception){
             ProjectStringType.LinkedString(
                 name = this,
                 uri = StringConnectList.uriMap[this],
-                color = StringConnectList.colorMap[this] ?: Color.Black
+                color = StringConnectList.colorMap[this]?.first ?: Color.Black,
+                antiColor = StringConnectList.colorMap[this]?.second ?: Color.White
             )
         }
     }else{
@@ -26,5 +28,6 @@ fun String.addUriToString(): ProjectStringType {
     }
 }
 
+fun String.insertLine() = this.replace("\\n","\n")
 
 

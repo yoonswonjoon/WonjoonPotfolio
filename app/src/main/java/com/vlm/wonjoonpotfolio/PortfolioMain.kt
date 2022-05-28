@@ -136,7 +136,13 @@ class PortfolioAppState(
     fun setDetailProjectName(s : String) { detailProject = s}
 
     val rootNav = listOf<String>(I_AM,HISTORY, CHAT, EVALUATE, SETTING)
-    val mainNavScreen = listOf(Screen.IAmMain,Screen.HistoryMain, Screen.ChatMain, Screen.EvaluateMain, Screen.SettingMain)
+    val mainNavScreen = listOf(
+        Screen.IAmMain,
+        Screen.HistoryMain,
+      //  Screen.ChatMain,
+     //   Screen.EvaluateMain,
+        Screen.SettingMain
+    )
 
     val currentRoute  : String
     get() = navHostController.currentDestination?.route?: I_AM_MAIN

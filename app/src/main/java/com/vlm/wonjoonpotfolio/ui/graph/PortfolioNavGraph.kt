@@ -17,7 +17,7 @@ import coil.compose.AsyncImage
 import com.vlm.wonjoonpotfolio.GraphList
 import com.vlm.wonjoonpotfolio.PortfolioAppState
 import com.vlm.wonjoonpotfolio.Screen
-import com.vlm.wonjoonpotfolio.ui.graph.iAmNavGraph
+import com.vlm.wonjoonpotfolio.ui.graph.childGraph.iAmNavGraph
 import com.vlm.wonjoonpotfolio.ui.history.HistoryViewModel
 import com.vlm.wonjoonpotfolio.ui.iAm.IAmViewModel
 
@@ -54,12 +54,12 @@ fun PortfolioNavGraph(
                }
             }
         }
-        composable(Screen.ChatMain.route){
-            Text(text = "3")
-        }
-        composable(Screen.EvaluateMain.route){
-            Text(text = "4")
-        }
+//        composable(Screen.ChatMain.route){
+//            Text(text = "3")
+//        }
+//        composable(Screen.EvaluateMain.route){
+//            Text(text = "4")
+//        }
         composable(Screen.SettingMain.route){
             Text(text = "5")
         }

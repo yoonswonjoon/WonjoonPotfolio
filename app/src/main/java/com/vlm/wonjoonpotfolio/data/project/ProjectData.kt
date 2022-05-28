@@ -1,16 +1,18 @@
 package com.vlm.wonjoonpotfolio.data.project
 
 import android.net.Uri
+import com.vlm.wonjoonpotfolio.domain.insertLine
 import java.io.Serializable
 
 
 data class ProjectDto(
+    val git : String? = null,
     val number :Int = 0,
     val name : String = "" ,
     val long : String = "",
     val briefEx : String = "",
     val uri : String= "", // !!
-    val uriList : List<String> = listOf(), // !!
+    val imgUriList : List<String?> = listOf(), // !!
     val downloadUri :String = "",
     val participant : List<String> = listOf(),
     val projectDetail : String = "" ,
@@ -20,30 +22,35 @@ data class ProjectDto(
     val localDB: String? = null,
     val logIn: String? = null,
     val ui: String? = null,
-    val stacks: String? = null
+    val stacks: Map<String, String>? = null
 ) : Serializable {
-    constructor() : this(1)
+    constructor() : this("")
 
     fun toProjectData(uri: Uri?): ProjectData {
+        val m = mutableMapOf<String,String>()
+        this.stacks?.forEach {
+            m[it.key] = it.value.toString()
+        }
         return ProjectData(
+            git = this.git,
             projectStatecks = ProjectStacks(
                 architecture = this.architecture,
                 server = this.server,
                 localDB = this.localDB,
                 logIn = this.logIn,
                 ui = this.ui,
-                stacks = this.stacks
+                stacks = m
             ),
             number = this.number,
             name = this.name,
             long = this.long,
             briefEx = this.briefEx,
             uri = uri, // !!
-            uriList = listOf(), // !!
+//            imgUriList = this.imgUriList, // !!
             downloadUri = this.downloadUri,
             participant = this.participant,
             projectDetail = this.projectDetail,
-            difficult = this.difficult,
+            difficult = this.difficult.map { it.key to it.value.insertLine() }.toMap().toSortedMap(),
         )
     }
 }
@@ -54,7 +61,7 @@ data class ProjectStacks(
     val localDB : String? = null,
     val logIn : String? = null,
     val ui : String? = null,
-    val stacks : String? = null
+    val stacks : Map<String,String>? = null
 ){
 
 }
@@ -62,12 +69,13 @@ data class ProjectStacks(
 
 data class ProjectData(
     val projectStatecks : ProjectStacks = ProjectStacks(),
+    val git : String? = null,
     val number : Int = 0,
     val name: String = "",
     val long : String = "",
     val briefEx: String = "",
     val uri : Uri? = null,
-    val uriList : List<Uri?> = listOf(),
+    val imgUriList : List<Uri?> = listOf(),
     val downloadUri : String? = null,
     val participant : List<String> = listOf(),
     val projectDetail : String = "",

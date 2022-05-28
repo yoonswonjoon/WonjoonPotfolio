@@ -1,4 +1,4 @@
-package com.vlm.wonjoonpotfolio.ui.graph
+package com.vlm.wonjoonpotfolio.ui.graph.childGraph
 
 import android.os.Build
 import androidx.annotation.RequiresApi

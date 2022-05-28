@@ -14,14 +14,19 @@ constructor(
     private val imgDataRepository: ImgDataRepository
 ) {
     operator fun invoke(list : List<String>) = flow {
+        val rt = mutableListOf<UserForUi>()
+
         try {
             val user = userRepository.getUser(list)//.map { it.uri }
+            emit(
+                user.map { it.toUserForUi(null) }
+            )
 
             emit(user.map {
                 it.toUserForUi(imgDataRepository.getImageUpgrade(it.uri))
             })
         }catch (e:Exception){
-            val a = 0
+//            emit(listOf())
         }
     }
 }
