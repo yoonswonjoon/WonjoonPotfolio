@@ -97,10 +97,9 @@ fun ProjectDetailRoute(
                 Spacer(modifier = Modifier.width(10.dp))
 
                 Column() {
-
                     OutlinedButton(
                         onClick = {
-                            if (uiState?.downloadUri == "this") {
+                            if (uiState?.downloadUri == "this" ) {
                                 coroutineScope.launch {
                                     appState.scaffoldState.snackbarHostState.showSnackbar(
                                         "현재어플입니다."
@@ -119,7 +118,6 @@ fun ProjectDetailRoute(
 
                         }) {
                         TextWithMainBody(text = "다운로드")
-
                     }
                     TextWithMainBody(text = uiState?.long ?: "알 수 없음.")
                     TextWithMainBody(text = "적용 스텍")
@@ -148,7 +146,7 @@ fun ProjectDetailRoute(
                     }
                 }
             }
-            TextWithSubTile(text = "프로젝트 소개", color = RedColor, modifier = Modifier.padding(5.dp),)
+            TextTitleWithBodyVertical(title = "프로젝트 소개", titleColor = RedColor, modifier = Modifier.padding(5.dp), body = uiState?.projectDetail)
             TextWithSubTile(text = "관련 사진", color = RedColor, modifier = Modifier.padding(5.dp))
             TextWithSubTile(text = "힘들었던 점", color = RedColor, modifier = Modifier.padding(5.dp))
             Column() {

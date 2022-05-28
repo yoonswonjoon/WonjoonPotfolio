@@ -42,18 +42,6 @@ fun IAmRoute(
     toProject : (ProjectData) -> Unit,
 ) {
     val viewState by viewModel.uiState.collectAsState()
-    val (rememberLoading,onShowed) = remember{
-        mutableStateOf(viewState.isLoading)
-    }
-    val coroutineScope = rememberCoroutineScope()
-//    if(rememberLoading){
-//        coroutineScope.launch {
-//            scaffoldState.snackbarHostState.showSnackbar(
-//                "로딩중입니다"
-//            )
-//        }
-//        onShowed(false)
-//    }
 
     val lazyListState = rememberLazyListState()
     IAmRoute(viewState = viewState, lazyListState = lazyListState,toProject = toProject )
@@ -162,11 +150,6 @@ fun IAmRoute(
             }
         }
     }
-
-    
-    
-
-
 }
 
 
