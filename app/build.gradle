@@ -6,6 +6,7 @@ plugins {
     id 'com.google.gms.google-services'
 }
 
+
 android {
     compileSdk 32
 
@@ -46,11 +47,21 @@ android {
             excludes += '/META-INF/{AL2.0,LGPL2.1}'
         }
     }
-
 }
 
 
+
 dependencies {
+
+    implementation fileTree(dir: "libs", include: ["*.jar", "*.aar"])
+
+    //kakao
+    implementation "com.kakao.sdk:v2-user:2.10.0" // 카카오 로그인
+    implementation "com.kakao.sdk:v2-talk:2.10.0" // 친구, 메시지(카카오톡)
+    implementation "com.kakao.sdk:v2-story:2.10.0" // 카카오스토리
+    implementation "com.kakao.sdk:v2-link:2.10.0" // 메시지(카카오링크)
+    implementation "com.kakao.sdk:v2-navi:2.10.0" // 카카오내비
+    implementation "com.kakao.sdk:v2-friend:2.10.0" // 카카오톡 소셜 피커, 리소스 번들 파일 포함
 
     //coil
     implementation "io.coil-kt:coil-compose:2.1.0"
@@ -63,6 +74,7 @@ dependencies {
     implementation 'com.google.firebase:firebase-firestore:24.1.2'
     implementation 'com.google.firebase:firebase-firestore-ktx:24.1.2'
     implementation 'com.google.firebase:firebase-storage-ktx:20.0.1'
+    implementation 'com.google.firebase:firebase-auth-ktx:21.0.4'
 
     def nav_version = "2.4.2"
     implementation("androidx.navigation:navigation-compose:$nav_version")
