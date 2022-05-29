@@ -5,6 +5,7 @@ import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.Button
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -61,7 +62,9 @@ fun PortfolioNavGraph(
 //            Text(text = "4")
 //        }
         composable(Screen.SettingMain.route){
-            Text(text = "5")
+            Button(onClick = { /*TODO*/ }) {
+                Text("로그인 테스트")
+            }
         }
     }
 }

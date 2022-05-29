@@ -1,18 +1,18 @@
 package com.vlm.wonjoonpotfolio.di
 
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.vlm.wonjoonpotfolio.data.ImgData.ImgDataRepository
 import com.vlm.wonjoonpotfolio.data.ImgData.ImgDataSource
 import com.vlm.wonjoonpotfolio.data.ImgData.ImgDataSourceImpl
-import com.vlm.wonjoonpotfolio.data.useCase.GetIAmDataUseCase
 import com.vlm.wonjoonpotfolio.data.iAm.iAmTextData.IAmTextDataRemoteDataSourceImpl
 import com.vlm.wonjoonpotfolio.data.iAm.iAmTextData.IAmTextDataRemoteDataSource
 import com.vlm.wonjoonpotfolio.data.iAm.iAmTextData.IAmTextDataRepository
+import com.vlm.wonjoonpotfolio.data.login.LoginDataSource
+import com.vlm.wonjoonpotfolio.data.login.LoginRepository
 import com.vlm.wonjoonpotfolio.data.project.ProjectDataSourceImpl
 import com.vlm.wonjoonpotfolio.data.project.ProjectRepository
-import com.vlm.wonjoonpotfolio.data.useCase.GetAllProjects
-import com.vlm.wonjoonpotfolio.data.useCase.GetMutlipleIAmDataUsecase
-import com.vlm.wonjoonpotfolio.data.useCase.GetUserUseCase
+import com.vlm.wonjoonpotfolio.data.useCase.*
 import com.vlm.wonjoonpotfolio.data.user.UserDataSource
 import com.vlm.wonjoonpotfolio.data.user.UserRepository
 import dagger.Binds
@@ -87,7 +87,20 @@ object IAmDi{
         imgDataRepository: ImgDataRepository
     ) = GetAllProjects(projectRepository,imgDataRepository)
 
+    @Provides
+    fun providesLoginDataSource(
+        firebaseAuth: FirebaseAuth
+    ) = LoginDataSource(firebaseAuth)
 
+    @Provides
+    fun providesLoginRepository(
+        loginDataSource: LoginDataSource
+    ) = LoginRepository(loginDataSource)
+
+    @Provides
+    fun providesLoginCheckUseCase(
+        loginRepository: LoginRepository
+    ) = LoginCheckUseCase(loginRepository)
 }
 
 @Module

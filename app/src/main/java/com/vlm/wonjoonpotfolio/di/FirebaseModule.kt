@@ -1,5 +1,6 @@
 package com.vlm.wonjoonpotfolio.di
 
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.firestoreSettings
 import com.google.firebase.storage.FirebaseStorage
@@ -32,5 +33,10 @@ object FirebaseModule{
 //        firebaseFirestore.firestoreSettings = setting
 
         return FirebaseStorage.getInstance()
+    }
+
+    @Provides
+    fun provideFireAuth() : FirebaseAuth{
+        return FirebaseAuth.getInstance()
     }
 }
