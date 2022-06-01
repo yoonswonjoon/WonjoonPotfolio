@@ -1,5 +1,7 @@
 package com.vlm.wonjoonpotfolio.di
 
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.vlm.wonjoonpotfolio.data.ImgData.ImgDataRepository
@@ -94,13 +96,10 @@ object IAmDi{
 
     @Provides
     fun providesLoginRepository(
-        loginDataSource: LoginDataSource
-    ) = LoginRepository(loginDataSource)
+        loginDataSource: LoginDataSource,
+        loginDataStore: DataStore<Preferences>
+    ) = LoginRepository(loginDataSource,loginDataStore)
 
-    @Provides
-    fun providesLoginCheckUseCase(
-        loginRepository: LoginRepository
-    ) = LoginCheckUseCase(loginRepository)
 }
 
 @Module

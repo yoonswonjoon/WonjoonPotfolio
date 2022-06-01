@@ -9,6 +9,7 @@ import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ArrowBack
@@ -18,6 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
@@ -103,13 +105,13 @@ fun PortfolioMain(
                     }
                     UserStateBox(
                         userState.isLoading,
-                        userState.name,
+                        name = userState.name,
+                        loginComplete = userState.loginComplete,
                         context  = context,
-                        login = {
-                            Toast.makeText(context,it,Toast.LENGTH_LONG).show()
+                        login = { id, password->
+                            if(id != null && password != null) userViewModel.login(id,password)
                         }
                     )
-                    
                 }
 
                      },
@@ -124,6 +126,25 @@ fun PortfolioMain(
             },
             scaffoldState = appState.scaffoldState,
         ) {
+            
+            if(userState.newUser){
+                Dialog(onDismissRequest = { userViewModel.cancelSignIn() }) {
+                    Surface(modifier = Modifier, shape = RoundedCornerShape(5.dp)) {
+                        Column() {
+                            Text(text = "아이디 생성하시겠습니까(kakao 이메일을 기준으로 가입이 완료됩니다)?")
+                            Row() {
+                                TextButton(onClick = { userViewModel.signIn() }) {
+                                    Text(text = "아이디 생성하기")
+                                }
+                                TextButton(onClick = { userViewModel.cancelSignIn() }) {
+                                    Text(text = "취소")
+                                }
+                            }
+
+                        }
+                    }
+                }
+            }
 
             PortfolioNavGraph(
                 appState,
@@ -209,15 +230,17 @@ fun rememberPortfolioAppState(
 fun UserStateBox(
     isLoading : Boolean,
     name : String?,
+    loginComplete : Boolean,
     context : Context,
-    login : (String) -> Unit
+    login : (String?,String?) -> Unit
 ){
     Box(modifier = Modifier.fillMaxSize()){
         val n = if(isLoading) {
             "로딩중"
         }else name
+
         Row(modifier = Modifier.align(Alignment.CenterEnd), verticalAlignment = Alignment.CenterVertically) {
-            if(n == null || n == "") {
+            if(!loginComplete) {
                 Button(onClick = {
                     val callback: (OAuthToken?, Throwable?) -> Unit = { token, error ->
                         if (error != null) {
@@ -226,13 +249,13 @@ fun UserStateBox(
                             UserApiClient.instance.me { user, e ->
                                 if(e!=null){
                                     login(
-                                        e.message?:"none"
+                                        e.message?: "none",e.message?: "none"
                                     )
                                 }
                                 try {
-                                    login(user?.kakaoAccount?.email?: "none")
+                                    login(user?.kakaoAccount?.email, user?.id?.toString())
                                 }catch (e:Exception){
-                                 login( e.message?: "none")
+                                 login( e.message?: "none",e.message?: "none")
                                 }
                             }
                             Log.i(ContentValues.TAG, "카카오계정으로 로그인 성공 ${token.accessToken}")
