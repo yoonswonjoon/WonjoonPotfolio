@@ -46,35 +46,36 @@ import kotlinx.coroutines.launch
 import java.lang.Exception
 
 
-sealed class Screen(val route: String, ){
-    object IAmMain :Screen("IamMain")
-    object Project :Screen("Project")
+sealed class Screen(val route: String) {
+    object IAmMain : Screen("IamMain")
+    object Project : Screen("Project")
 
-    object HistoryMain :Screen("HistoryMain")
+    object HistoryMain : Screen("HistoryMain")
 
-    object ChatMain :Screen("ChatMain")
+    object ChatMain : Screen("ChatMain")
 
-    object EvaluateMain :Screen("EvaluateMain")
+    object EvaluateMain : Screen("EvaluateMain")
 
-    object SettingMain :Screen("SettingMain")
+    object SettingMain : Screen("SettingMain")
 }
+
 //
-sealed class GraphList(val route : String){
+sealed class GraphList(val route: String) {
     object RootGraph : GraphList("Root")
-    object IAmGraph :GraphList("IAm")
-    object HistoryGraph :GraphList("History")
-    object ChatGraph :GraphList("Chat")
-    object EvaluateGraph :GraphList("Evaluate")
-    object SettingGraph :GraphList("Setting")
+    object IAmGraph : GraphList("IAm")
+    object HistoryGraph : GraphList("History")
+    object ChatGraph : GraphList("Chat")
+    object EvaluateGraph : GraphList("Evaluate")
+    object SettingGraph : GraphList("Setting")
 }
 
 @RequiresApi(Build.VERSION_CODES.N)
 @Composable
 fun PortfolioMain(
 ) {
-    WonjoonPotfolioTheme{
+    WonjoonPotfolioTheme {
 
-        val userViewModel : AppUserStateViewModel = viewModel()
+        val userViewModel: AppUserStateViewModel = viewModel()
         val userState by userViewModel.loginViewState.collectAsState()
         val context = LocalContext.current
         val appState = rememberPortfolioAppState()
@@ -86,37 +87,41 @@ fun PortfolioMain(
         Scaffold(
             modifier = Modifier,
             topBar = {
-                TopAppBar(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .background(Color.White),
-                    
-                ) {
-                    Spacer(modifier = Modifier.width(10.dp))
-                    if(!appState.shouldShowBar){
-                        Icon(Icons.Rounded.ArrowBack, null,modifier = Modifier.clickable {
-                            appState.navHostController.popBackStack()
-                        })
-                    }
-                    Text(text = currentRoute)
-                    if(currentRoute == Screen.Project.route){
-                        Spacer(modifier = Modifier.width(15.dp))
-                        Text(text = appState.detailProject)
-                    }
-                    UserStateBox(
-                        userState.isLoading,
-                        name = userState.name,
-                        loginComplete = userState.loginComplete,
-                        context  = context,
-                        login = { id, password->
-                            if(id != null && password != null) userViewModel.login(id,password)
+                if (appState.shouldShowBar) {
+                    TopAppBar(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .background(Color.White),
+
+                        ) {
+                        Spacer(modifier = Modifier.width(10.dp))
+                        if (!appState.shouldShowBar) {
+                            Icon(Icons.Rounded.ArrowBack, null, modifier = Modifier.clickable {
+                                appState.navHostController.popBackStack()
+                            })
                         }
-                    )
+                        Text(text = currentRoute)
+                        if (currentRoute == Screen.Project.route) {
+                            Spacer(modifier = Modifier.width(15.dp))
+                            Text(text = appState.detailProject)
+                        }
+                        UserStateBox(
+                            userState.isLoading,
+                            name = userState.name,
+                            loginComplete = userState.loginComplete,
+                            context = context,
+                            login = { id, password ->
+                                if (id != null && password != null) userViewModel.login(id,
+                                    password)
+                            }
+                        )
+                    }
                 }
 
-                     },
+
+            },
             bottomBar = {
-                if(appState.shouldShowBar){
+                if (appState.shouldShowBar) {
                     PortfolioBottomNav(
                         currentRoute,
                         appState = appState,
@@ -126,8 +131,8 @@ fun PortfolioMain(
             },
             scaffoldState = appState.scaffoldState,
         ) {
-            
-            if(userState.newUser){
+
+            if (userState.newUser) {
                 Dialog(onDismissRequest = { userViewModel.cancelSignIn() }) {
                     Surface(modifier = Modifier, shape = RoundedCornerShape(5.dp)) {
                         Column() {
@@ -155,13 +160,12 @@ fun PortfolioMain(
 }
 
 
-
 @Composable
 fun PortfolioBottomNav(
-    current : String,
+    current: String,
     appState: PortfolioAppState,
-    navToRoute: (String) ->Unit
-){
+    navToRoute: (String) -> Unit,
+) {
     BottomNavigation() {
         appState.mainNavScreen.map {
             BottomNavigationItem(
@@ -176,39 +180,41 @@ fun PortfolioBottomNav(
 class PortfolioAppState(
     val scaffoldState: ScaffoldState,
     val navHostController: NavHostController,
-){
+) {
 
     var detailProject = ""
-    fun setDetailProjectName(s : String) { detailProject = s}
+    fun setDetailProjectName(s: String) {
+        detailProject = s
+    }
 
-    val rootNav = listOf<String>(I_AM,HISTORY, CHAT, EVALUATE, SETTING)
+    val rootNav = listOf<String>(I_AM, HISTORY, CHAT, EVALUATE, SETTING)
     val mainNavScreen = listOf(
         Screen.IAmMain,
         Screen.HistoryMain,
-      //  Screen.ChatMain,
-     //   Screen.EvaluateMain,
+        //  Screen.ChatMain,
+        //   Screen.EvaluateMain,
         Screen.SettingMain
     )
 
-    val currentRoute  : String
-    get() = navHostController.currentDestination?.route?: I_AM_MAIN
+    val currentRoute: String
+        get() = navHostController.currentDestination?.route ?: I_AM_MAIN
 
-    val shouldShowBar : Boolean
-         get() = currentRoute in mainNavScreen.map { it.route }
+    val shouldShowBar: Boolean
+        get() = currentRoute in mainNavScreen.map { it.route }
 
-    fun moveByBottomNavigation(route : String){
-        if(route != currentRoute) {
-            navHostController.navigate(route){
-                popUpTo(Screen.IAmMain.route){
+    fun moveByBottomNavigation(route: String) {
+        if (route != currentRoute) {
+            navHostController.navigate(route) {
+                popUpTo(Screen.IAmMain.route) {
                     saveState = true
                 }
             }
         }
     }
 
-    fun navigateToProjectDetail(projectData: ProjectData){
+    fun navigateToProjectDetail(projectData: ProjectData) {
         setDetailProjectName(projectData.name)
-        navHostController.navigate(Screen.Project.route){
+        navHostController.navigate(Screen.Project.route) {
             popUpTo(navHostController.graph.findStartDestination().id) {
                 saveState = true
             }
@@ -221,41 +227,42 @@ class PortfolioAppState(
 @Composable
 fun rememberPortfolioAppState(
     scaffoldState: ScaffoldState = rememberScaffoldState(),
-    navHostController: NavHostController = rememberNavController()
-) = remember(scaffoldState,navHostController){
-    PortfolioAppState(scaffoldState,navHostController)
+    navHostController: NavHostController = rememberNavController(),
+) = remember(scaffoldState, navHostController) {
+    PortfolioAppState(scaffoldState, navHostController)
 }
 
 @Composable
 fun UserStateBox(
-    isLoading : Boolean,
-    name : String?,
-    loginComplete : Boolean,
-    context : Context,
-    login : (String?,String?) -> Unit
-){
-    Box(modifier = Modifier.fillMaxSize()){
-        val n = if(isLoading) {
+    isLoading: Boolean,
+    name: String?,
+    loginComplete: Boolean,
+    context: Context,
+    login: (String?, String?) -> Unit,
+) {
+    Box(modifier = Modifier.fillMaxSize()) {
+        val n = if (isLoading) {
             "로딩중"
-        }else name
+        } else name
 
-        Row(modifier = Modifier.align(Alignment.CenterEnd), verticalAlignment = Alignment.CenterVertically) {
-            if(!loginComplete) {
+        Row(modifier = Modifier.align(Alignment.CenterEnd),
+            verticalAlignment = Alignment.CenterVertically) {
+            if (!loginComplete) {
                 Button(onClick = {
                     val callback: (OAuthToken?, Throwable?) -> Unit = { token, error ->
                         if (error != null) {
                             Log.e(ContentValues.TAG, "카카오계정으로 로그인 실패", error)
                         } else if (token != null) {
                             UserApiClient.instance.me { user, e ->
-                                if(e!=null){
+                                if (e != null) {
                                     login(
-                                        e.message?: "none",e.message?: "none"
+                                        e.message ?: "none", e.message ?: "none"
                                     )
                                 }
                                 try {
                                     login(user?.kakaoAccount?.email, user?.id?.toString())
-                                }catch (e:Exception){
-                                 login( e.message?: "none",e.message?: "none")
+                                } catch (e: Exception) {
+                                    login(e.message ?: "none", e.message ?: "none")
                                 }
                             }
                             Log.i(ContentValues.TAG, "카카오계정으로 로그인 성공 ${token.accessToken}")
@@ -276,7 +283,8 @@ fun UserStateBox(
                                 }
 
                                 // 카카오톡에 연결된 카카오계정이 없는 경우, 카카오계정으로 로그인 시도
-                                UserApiClient.instance.loginWithKakaoAccount(context, callback = callback)
+                                UserApiClient.instance.loginWithKakaoAccount(context,
+                                    callback = callback)
                             } else if (token != null) {
                                 Log.i(ContentValues.TAG, "카카오톡으로 로그인 성공 ${token.accessToken}")
                             }
@@ -291,7 +299,7 @@ fun UserStateBox(
                     Text(text = "회원가입")
                 }
             }
-            Text(text =name?: "익명사용자" ,modifier = Modifier)
+            Text(text = name ?: "익명사용자", modifier = Modifier)
 
         }
     }
