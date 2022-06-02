@@ -53,11 +53,18 @@ fun ProjectDetailRoute(
     val bottomSheetScaffoldState = rememberModalBottomSheetState(
         ModalBottomSheetValue.Hidden
     )
-    val phoneNumberPermissionState = rememberPermissionState(permission = android.Manifest.permission.READ_PHONE_STATE)
-
     LaunchedEffect(true) {
         projectViewModel.initProjectView(userListOperator!!,uiState?.projectStatecks?.stacks)
     }
+    
+    if(viewState.errors.isNotEmpty()){
+        val error = viewState.errors.first()
+        DialogBasic(onDismiss = { /*TODO*/ }, onOk = { projectViewModel.dismissError(error) }, okText = "okok", noText = "nono") {
+            Text(text = error.msg)
+        }
+    }
+    
+    
 
     ModalBottomSheetLayout(
         sheetContent = {
@@ -150,19 +157,7 @@ fun ProjectDetailRoute(
 
                 ProjectInteractButtons(
                     onClickEvaluate = {
-                        when(phoneNumberPermissionState.status){
-                            is PermissionStatus.Granted ->{
-                                coroutineScope.launch {
-
-                                    val nb :TelephonyManager= context.getSystemService(Context.TELEPHONY_SERVICE) as TelephonyManager
-                                    appState.scaffoldState.snackbarHostState.showSnackbar(nb.line1Number)
-
-                                }
-                            }
-                            is PermissionStatus.Denied ->{
-                                phoneNumberPermissionState.launchPermissionRequest()
-                            }
-                        }
+                        projectViewModel.evaluation(0)
                     },
                     onClickQ = {
                         

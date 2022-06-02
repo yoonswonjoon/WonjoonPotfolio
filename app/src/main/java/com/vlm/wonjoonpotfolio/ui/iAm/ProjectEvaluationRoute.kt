@@ -21,18 +21,16 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.vlm.wonjoonpotfolio.ui.component.DialogBasic
 
 @Composable
 fun ProjectEvaluationRoute(
     haveEvaluated : Boolean,
     evaluate : (Int) -> Unit
 ) {
-    var (point,setPoint) = androidx.compose.runtime.remember {
+    val (point,setPoint) = androidx.compose.runtime.remember {
         androidx.compose.runtime.mutableStateOf(0)
     }
-
-
-
     if(!haveEvaluated){
         Column(modifier = Modifier.fillMaxSize()) {
             EvaluationRow(max = 5, point = point, onClick = {
@@ -55,17 +53,6 @@ fun ProjectEvaluationRoute(
 
 @Composable
 fun EvaluationRow(max : Int, point : Int, onClick: (Int) -> Unit){
-//    var selected by remember{
-//        mutableStateOf(false)
-//    }
-
-//    val size by animateDpAsState(targetValue = 100.dp,
-//        animationSpec = spring(
-//            dampingRatio = Spring.DampingRatioHighBouncy,
-//            stiffness = Spring.StiffnessMedium
-//        )
-//    )
-
     Row() {
         for (i in 1..max){
             if (i <= point){
@@ -87,6 +74,13 @@ fun EvaluationRow(max : Int, point : Int, onClick: (Int) -> Unit){
 
         }
     }
+}
+
+@Composable
+fun NeedPointDialog(onDismiss : () -> Unit, onOk : () -> Unit){
+//    DialogBasic(onDismiss = { /*TODO*/ }, onOk = { /*TODO*/ }, okText = , noText = "", justOkBtn = true) {
+//        Text(text = "1개 이상의 점수를 주셔야 해요")
+//    }
 }
 
 @Preview
