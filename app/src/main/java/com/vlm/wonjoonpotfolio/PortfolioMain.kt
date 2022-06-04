@@ -152,6 +152,7 @@ fun PortfolioMain(
             }
 
             PortfolioNavGraph(
+                userViewModel,
                 appState,
                 modifier = Modifier.padding(it)
             )

@@ -33,6 +33,7 @@ import com.vlm.wonjoonpotfolio.R
 import com.vlm.wonjoonpotfolio.data.user.UserForUi
 import com.vlm.wonjoonpotfolio.domain.ModifierSetting.HORIZONTAL_SPACE
 import com.vlm.wonjoonpotfolio.domain.ProjectStringType
+import com.vlm.wonjoonpotfolio.ui.AppUserStateViewModel
 import com.vlm.wonjoonpotfolio.ui.component.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -41,6 +42,7 @@ import kotlinx.coroutines.launch
 @RequiresApi(Build.VERSION_CODES.N)
 @Composable
 fun ProjectDetailRoute(
+    userStateViewModel: AppUserStateViewModel,
     viewModel: IAmViewModel,
     projectViewModel: ProjectViewModel,
     appState: PortfolioAppState,
@@ -80,7 +82,7 @@ fun ProjectDetailRoute(
             viewState.evaluationPoint,
             onDismiss = projectViewModel::evaluationDialogDismiss,
             onOk = {
-
+                projectViewModel.proceedEvaluation(1)
             }
         )
     }

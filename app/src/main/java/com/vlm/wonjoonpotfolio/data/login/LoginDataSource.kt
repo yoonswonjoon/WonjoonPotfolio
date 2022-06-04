@@ -24,6 +24,4 @@ class LoginDataSource @Inject constructor(private val auth : FirebaseAuth){
     fun checkSignIn(email : String, password : String): Task<AuthResult> {
         return auth.signInWithEmailAndPassword(email,password)
     }
-
-
 }

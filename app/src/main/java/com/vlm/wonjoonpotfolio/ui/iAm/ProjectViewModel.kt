@@ -3,6 +3,7 @@ package com.vlm.wonjoonpotfolio.ui.iAm
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.vlm.wonjoonpotfolio.data.useCase.GetUserUseCase
+import com.vlm.wonjoonpotfolio.data.useCase.LoginCheckUserCase
 import com.vlm.wonjoonpotfolio.data.user.UserForUi
 import com.vlm.wonjoonpotfolio.domain.PortfolioError
 import com.vlm.wonjoonpotfolio.domain.ProjectStringType
@@ -33,7 +34,12 @@ data class ProjectViewState(
 )
 
 @HiltViewModel
-class ProjectViewModel @Inject constructor(private val getUserUseCase: GetUserUseCase) :
+class ProjectViewModel
+@Inject
+constructor(
+    private val getUserUseCase: GetUserUseCase,
+    private val loginCheckUserCase: LoginCheckUserCase
+) :
     ViewModel() {
     private val _viewState = MutableStateFlow(
         ProjectViewState()
@@ -84,7 +90,7 @@ class ProjectViewModel @Inject constructor(private val getUserUseCase: GetUserUs
         }
     }
 
-    fun evaluationDialogDismiss(){
+    fun evaluationDialogDismiss() {
         _viewState.value = _viewState.value.copy(
             evaluationDialogShow = false,
         )
@@ -106,14 +112,20 @@ class ProjectViewModel @Inject constructor(private val getUserUseCase: GetUserUs
     }
 
     fun openEvaluation() {
-        _viewState.value = _viewState.value.copy(currentDetailRoute = ProjectDetailPage.EvaluationPage)
+        _viewState.value =
+            _viewState.value.copy(currentDetailRoute = ProjectDetailPage.EvaluationPage)
     }
 
     fun closeEvaluation() {
         _viewState.value = _viewState.value.copy(currentDetailRoute = ProjectDetailPage.DetailPage)
     }
 
-    fun proceedEvaluation(point : Int){
+    fun proceedEvaluation(point: Int) {
+        if(loginCheckUserCase.invoke()){
+            addErrors(PortfolioError(msg = "기능 추가해야함"))
+        }else{
+            addErrors(PortfolioError(msg = "로그인이 필요한 기능입니다. 메인 화면에서 로그인을 해주세요"))
+        }
 
     }
 }

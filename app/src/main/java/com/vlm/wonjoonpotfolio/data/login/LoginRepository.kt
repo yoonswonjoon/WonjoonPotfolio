@@ -93,4 +93,6 @@ class LoginRepository @Inject constructor(
         }
     }
 
+    fun checkLogin() = loginDataSource.checkLogin()
+
 }
