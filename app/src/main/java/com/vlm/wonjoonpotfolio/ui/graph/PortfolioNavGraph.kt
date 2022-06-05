@@ -25,7 +25,6 @@ import com.vlm.wonjoonpotfolio.ui.iAm.IAmViewModel
 @RequiresApi(Build.VERSION_CODES.N)
 @Composable
 fun PortfolioNavGraph(
-    userStateViewModel: AppUserStateViewModel,
     appState: PortfolioAppState,
     modifier : Modifier =  Modifier
 ) {
@@ -38,7 +37,6 @@ fun PortfolioNavGraph(
         modifier = modifier,
     ){
         iAmNavGraph(
-            userStateViewModel = userStateViewModel,
             appState = appState,
             viewModel = iamViewModel,
             startDestination = Screen.IAmMain.route,

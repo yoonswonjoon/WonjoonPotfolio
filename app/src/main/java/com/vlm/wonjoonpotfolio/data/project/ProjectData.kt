@@ -6,6 +6,7 @@ import java.io.Serializable
 
 
 data class ProjectDto(
+    val uid : String = "",
     val git : String? = null,
     val number :Int = 0,
     val name : String = "" ,
@@ -22,7 +23,9 @@ data class ProjectDto(
     val localDB: String? = null,
     val logIn: String? = null,
     val ui: String? = null,
-    val stacks: Map<String, String>? = null
+    val stacks: Map<String, String>? = null,
+    val accPoint : Int =0,
+    val participantCount : Int = 0
 ) : Serializable {
     constructor() : this("")
 
@@ -32,6 +35,7 @@ data class ProjectDto(
             m[it.key] = it.value.toString()
         }
         return ProjectData(
+            uid =this.uid,
             git = this.git,
             projectStatecks = ProjectStacks(
                 architecture = this.architecture,
@@ -51,6 +55,8 @@ data class ProjectDto(
             participant = this.participant,
             projectDetail = this.projectDetail,
             difficult = this.difficult.map { it.key to it.value.insertLine() }.toMap().toSortedMap(),
+            accPoint = this.accPoint,
+            participantCount = this.participantCount
         )
     }
 }
@@ -68,6 +74,7 @@ data class ProjectStacks(
 
 
 data class ProjectData(
+    val uid : String = "",
     val projectStatecks : ProjectStacks = ProjectStacks(),
     val git : String? = null,
     val number : Int = 0,
@@ -80,7 +87,9 @@ data class ProjectData(
     val participant : List<String> = listOf(),
     val projectDetail : String = "",
     val difficult : Map<String,String> = mapOf(),
-    val comments : List<WjComment> = listOf()
+    val comments : List<WjComment> = listOf(),
+    val accPoint : Int,
+    val participantCount : Int
 ) {
 }
 

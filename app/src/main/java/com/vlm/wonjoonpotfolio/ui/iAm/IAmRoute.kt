@@ -344,5 +344,5 @@ fun TopMainViewPreView(){
 @Preview
 @Composable
 fun ProjectItemPreview(){
-    ProjectItem(ProjectData()){}
+//    ProjectItem(ProjectData()){}
 }

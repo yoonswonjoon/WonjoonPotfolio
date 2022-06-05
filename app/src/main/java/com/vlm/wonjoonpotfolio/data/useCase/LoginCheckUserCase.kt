@@ -9,6 +9,5 @@ constructor(
     private val loginRepository: LoginRepository
 ) {
     operator fun invoke() =
-        loginRepository.checkLogin() != null
-
+        loginRepository.checkLogin()
 }

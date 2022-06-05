@@ -6,4 +6,8 @@ class ProjectRepository @Inject constructor(private val projectDataSource : Proj
     suspend fun getAllProject(): List<ProjectDto> {
          return projectDataSource.getAllProject()
     }
+
+    suspend fun getProject(id : String) : ProjectDto {
+        return projectDataSource.getProject(id)
+    }
 }

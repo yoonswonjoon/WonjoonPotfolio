@@ -11,4 +11,9 @@ class ProjectDataSourceImpl @Inject constructor(private val firebase: FirebaseFi
             it.toObject(ProjectDto::class.java)!!
         }
     }
+
+    suspend fun getProject(id : String): ProjectDto {
+        val doc = firebase.collection("project").document(id).get().await()
+        return doc.toObject(ProjectDto::class.java)!!
+    }
 }

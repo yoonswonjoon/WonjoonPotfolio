@@ -14,6 +14,9 @@ import com.vlm.wonjoonpotfolio.data.login.LoginDataSource
 import com.vlm.wonjoonpotfolio.data.login.LoginRepository
 import com.vlm.wonjoonpotfolio.data.project.ProjectDataSourceImpl
 import com.vlm.wonjoonpotfolio.data.project.ProjectRepository
+import com.vlm.wonjoonpotfolio.data.project.evaluate.ProjectEvaluateDataSource
+import com.vlm.wonjoonpotfolio.data.project.evaluate.ProjectEvaluateDataSourceImpl
+import com.vlm.wonjoonpotfolio.data.project.evaluate.ProjectEvaluateRepository
 import com.vlm.wonjoonpotfolio.data.useCase.*
 import com.vlm.wonjoonpotfolio.data.user.UserDataSource
 import com.vlm.wonjoonpotfolio.data.user.UserRepository
@@ -100,6 +103,16 @@ object IAmDi{
         loginDataStore: DataStore<Preferences>
     ) = LoginRepository(loginDataSource,loginDataStore)
 
+
+    @Provides
+    fun providesProjectEvaluateRepository(
+        projectEvaluateDataSource: ProjectEvaluateDataSourceImpl
+    ) = ProjectEvaluateRepository(projectEvaluateDataSource)
+
+    @Provides
+    fun providesGetProject(
+        projectRepository: ProjectRepository
+    ) = GetProject(projectRepository)
 }
 
 @Module
@@ -115,5 +128,10 @@ abstract class IAmDataSourceModule{
     abstract fun bindImgDataSource(
         imgDataSource: ImgDataSourceImpl
     ) : ImgDataSource
+
+    @Binds
+    abstract fun bindProjectEvaluateDataSource(
+        projectEvaluateDataSource : ProjectEvaluateDataSourceImpl
+    ) : ProjectEvaluateDataSource
 }
 

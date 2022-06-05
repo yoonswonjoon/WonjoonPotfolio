@@ -1,5 +1,6 @@
 package com.vlm.wonjoonpotfolio.ui.component
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -9,6 +10,7 @@ import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextStyle
@@ -19,6 +21,7 @@ import com.google.accompanist.flowlayout.FlowRow
 import com.vlm.wonjoonpotfolio.domain.ProjectStringType
 import com.vlm.wonjoonpotfolio.domain.addUriToString
 import com.vlm.wonjoonpotfolio.domain.commaSplit
+import com.vlm.wonjoonpotfolio.ui.theme.Shapes
 
 
 @Composable
@@ -134,3 +137,22 @@ fun TextDescribeStacksApp(
     }
 }
 
+@Composable
+fun OutLinedBasicText(
+    outLinedColor :Color =RedColor,
+    outLinedDp : Dp = 1.dp,
+    contentColor : Color = Color.White,
+    composable: @Composable ColumnScope.() -> Unit
+){
+    Surface(
+        shape = RoundedCornerShape(10.dp),
+        modifier = Modifier
+            .clip(RoundedCornerShape(10.dp))
+            .background(outLinedColor)
+            .padding(outLinedDp)
+    ) {
+        Column(modifier = Modifier.padding(5.dp).background(color = contentColor)) {
+            composable()
+        }
+    }
+}
