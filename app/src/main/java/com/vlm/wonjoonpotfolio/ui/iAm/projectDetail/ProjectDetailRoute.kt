@@ -111,7 +111,9 @@ fun ProjectDetailRoute(
                     coroutineScope = coroutineScope,
                     selectUser = projectViewModel::selectUser,
                     openEvaluate = projectViewModel::openEvaluation,
-                    onClickQ = { projectViewModel.addErrors(PortfolioError(msg = "아직 지원하지 않는 기능입니다.")) }
+                    onClickQ = { projectViewModel.addErrors(PortfolioError(msg = "아직 지원하지 않는 기능입니다."))
+//                        throw RuntimeException("Test Crash")
+                    }
                 )
             }
             ProjectDetailPage.EvaluationPage ->{

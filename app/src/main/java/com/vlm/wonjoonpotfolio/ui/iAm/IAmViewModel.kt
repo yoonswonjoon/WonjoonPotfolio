@@ -65,6 +65,8 @@ constructor(
                     _uiState.value = _uiState.value.copy(projectList = resultState.data)
                 }
             }
+        }.catch {
+
         }.launchIn(viewModelScope)
 
         getIAmDataUseCase("wj.png").onEach { result ->

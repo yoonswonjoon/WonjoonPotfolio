@@ -24,6 +24,7 @@ private const val portfolioPreferences = "portfolioPreferences"
 @Module
 object DataStoreModule {
 
+
     @Singleton
     @Provides
     fun providesPreferencesDataStore(@ApplicationContext appContext :Context) : DataStore<Preferences>{

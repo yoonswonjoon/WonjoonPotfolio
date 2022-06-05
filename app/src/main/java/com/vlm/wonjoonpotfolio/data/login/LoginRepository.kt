@@ -3,6 +3,7 @@ package com.vlm.wonjoonpotfolio.data.login
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.vlm.wonjoonpotfolio.domain.PreferencesKey
 import com.vlm.wonjoonpotfolio.domain.ResultState
 import kotlinx.coroutines.flow.first
@@ -12,8 +13,13 @@ import javax.inject.Inject
 
 class LoginRepository @Inject constructor(
     private val loginDataSource: LoginDataSource,
-    private val loginDataStorage : DataStore<Preferences>
+    private val loginDataStorage : DataStore<Preferences>,
+    private val firebaseCrashlytics: FirebaseCrashlytics
     ) {
+
+    companion object {
+        const val TAG = "LoginRepository"
+    }
 
     fun autoLogin() = flow {
         try {
@@ -24,8 +30,9 @@ class LoginRepository @Inject constructor(
                 var email : String? = null
                 loginDataSource.firebaseLogin(id,password).addOnSuccessListener {
                     email = it.user?.email
+                    firebaseCrashlytics.setUserId(email?: "unKnown")
                 }.addOnFailureListener {
-                    val a = 0
+                    firebaseCrashlytics.log("$TAG : ${it.message?: "unknown"}")
                 }.await()
 
                 if(email == null){
@@ -37,7 +44,8 @@ class LoginRepository @Inject constructor(
                 emit(ResultState.error("login failed"))
             }
         }catch (e:Exception){
-            emit(ResultState.error("login failed"))
+            firebaseCrashlytics.log("$TAG : ${e.message?: "unknown"}")
+
         }
     }
 
@@ -51,8 +59,9 @@ class LoginRepository @Inject constructor(
             var email : String? = null
             loginDataSource.firebaseLogin(id,password).addOnSuccessListener {
                 email = it.user?.email
+                firebaseCrashlytics.setUserId(email?: "unKnown")
             }.addOnFailureListener {
-                val a = 0
+                firebaseCrashlytics.log("$TAG : ${it.message?: "unknown"}")
             }.await()
 
             if(email == null){
@@ -61,24 +70,22 @@ class LoginRepository @Inject constructor(
                 emit(ResultState.success(email))
             }
         }catch (e:Exception){
-            emit(ResultState.error("login failed"))
+            firebaseCrashlytics.log("$TAG : ${e.message?: "unknown"}")
+//            emit(ResultState.error("login failed"))
         }
     }
 
-    fun firebaseSignIn(/*id: String, password: String*/) = flow {
+    fun firebaseSignIn() = flow {
         try {
-//            loginDataStorage.edit { preferences ->
-//                preferences[PreferencesKey.LOGIN_ID] = id
-//                preferences[PreferencesKey.LOGIN_PASSWORD] = password
-//            }
             val id = loginDataStorage.data.first()[PreferencesKey.LOGIN_ID]!!
             val password = loginDataStorage.data.first()[PreferencesKey.LOGIN_PASSWORD]!!
             var email : String? = null
             loginDataSource.firebaseSignIn(id, password).addOnSuccessListener {
                 loginDataSource.firebaseLogin(id,password).addOnSuccessListener {
                     email = it.user?.email
+                    firebaseCrashlytics.setUserId(email?: "unKnown")
                 }.addOnFailureListener {
-
+                    firebaseCrashlytics.log("$TAG : ${it.message?: "unknown"}")
                 }
             }.addOnFailureListener {
 
@@ -89,7 +96,8 @@ class LoginRepository @Inject constructor(
                 emit(ResultState.success(email))
             }
         }catch (e:Exception){
-            emit(ResultState.error("login failed"))
+            firebaseCrashlytics.log("$TAG : ${e.message?: "unknown"}")
+//            emit(ResultState.error("login failed"))
         }
     }
 

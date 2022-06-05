@@ -20,29 +20,19 @@ constructor(
             }
             emit(ResultState.success(result))
         }catch (e:Exception){
-            emit(ResultState.error(e.message ?: "I Don't Know"))
+            println(e.message)
+//            emit(ResultState.error(e.message ?: "I Don't Know"))
         }
     }
 
     fun amIin(userUid : String, projectId: String) = flow{
-        try {
-            val amIin = projectEvaluateDataSource.amIin(userUid,projectId)
-            emit(amIin)
-        }catch (e:Exception){
-            emit(null)
-        }
+        val amIin = projectEvaluateDataSource.amIin(userUid,projectId)
+        emit(amIin)
     }
 
     fun getAllEvaluate(projectId: String)=  flow {
-        try {
-            emit(ResultState.loading())
-            val list = projectEvaluateDataSource.loadEvaluate(projectId)
-            emit(ResultState.success(list))
-        }catch (e:Exception){
-            emit(ResultState.error(e.message?: "I don't know why"))
-        }
-        catch (e:Exception){
-            emit(ResultState.error(e.message?: "I don't know why"))
-        }
+        emit(ResultState.loading())
+        val list = projectEvaluateDataSource.loadEvaluate(projectId)
+        emit(ResultState.success(list))
     }
 }

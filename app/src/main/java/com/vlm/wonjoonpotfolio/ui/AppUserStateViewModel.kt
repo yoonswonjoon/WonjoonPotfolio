@@ -62,6 +62,8 @@ constructor(
                     )
                 }
             }
+        }.catch {
+
         }.launchIn(viewModelScope)
     }
 
@@ -89,7 +91,10 @@ constructor(
                     )
                 }
             }
-        }.launchIn(viewModelScope)
+        }.catch {
+
+        }
+            .launchIn(viewModelScope)
     }
 
     fun signIn(/*id: String, password: String*/) {
@@ -118,6 +123,8 @@ constructor(
                     )
                 }
             }
+
+        }.catch {
 
         }.launchIn(viewModelScope)
     }

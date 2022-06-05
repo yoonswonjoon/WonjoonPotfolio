@@ -4,7 +4,6 @@ import android.content.ContentValues
 import android.content.Context
 import android.os.Build
 import android.util.Log
-import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -17,7 +16,9 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -30,7 +31,6 @@ import com.kakao.sdk.common.model.ClientError
 import com.kakao.sdk.common.model.ClientErrorCause
 import com.kakao.sdk.user.UserApiClient
 import com.vlm.wonjoonpotfolio.data.project.ProjectData
-import com.vlm.wonjoonpotfolio.domain.ModifierSetting.TOOL_ELEVATION
 import com.vlm.wonjoonpotfolio.ui.AppUserStateViewModel
 import com.vlm.wonjoonpotfolio.ui.IamDestination.I_AM_MAIN
 import com.vlm.wonjoonpotfolio.ui.PortfolioDestination.CHAT
@@ -39,24 +39,22 @@ import com.vlm.wonjoonpotfolio.ui.PortfolioDestination.HISTORY
 import com.vlm.wonjoonpotfolio.ui.PortfolioDestination.I_AM
 import com.vlm.wonjoonpotfolio.ui.PortfolioDestination.SETTING
 import com.vlm.wonjoonpotfolio.ui.PortfolioNavGraph
-import com.vlm.wonjoonpotfolio.ui.history.HistoryViewModel
 import com.vlm.wonjoonpotfolio.ui.theme.WonjoonPotfolioTheme
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.launch
 import java.lang.Exception
+import java.util.*
 
 
-sealed class Screen(val route: String) {
-    object IAmMain : Screen("IamMain")
-    object Project : Screen("Project")
+sealed class Screen(val route: String, val res: Int) {
+    object IAmMain : Screen("IamMain", R.string.home)
+    object Project : Screen("Project", R.string.home)
 
-    object HistoryMain : Screen("HistoryMain")
+    object HistoryMain : Screen("HistoryMain",R.string.history)
 
-    object ChatMain : Screen("ChatMain")
+    object ChatMain : Screen("ChatMain",R.string.home)
 
-    object EvaluateMain : Screen("EvaluateMain")
+    object EvaluateMain : Screen("EvaluateMain",R.string.home)
 
-    object SettingMain : Screen("SettingMain")
+    object SettingMain : Screen("SettingMain",R.string.setting)
 }
 
 //
@@ -74,7 +72,6 @@ sealed class GraphList(val route: String) {
 fun PortfolioMain(
 ) {
     WonjoonPotfolioTheme {
-
         val userViewModel: AppUserStateViewModel = viewModel()
         val userState by userViewModel.loginViewState.collectAsState()
         val context = LocalContext.current
@@ -83,6 +80,11 @@ fun PortfolioMain(
         val navBackStackEntry by appState.navHostController.currentBackStackEntryAsState()
         val currentRoute =
             navBackStackEntry?.destination?.route ?: I_AM
+
+        var locale by remember {
+            mutableStateOf("en")
+        }
+        SetLanguage(locale = locale)
 
         Scaffold(
             modifier = Modifier,
@@ -153,11 +155,23 @@ fun PortfolioMain(
 
             PortfolioNavGraph(
                 appState,
+                selectCountry = {
+                                locale = "kr"
+                },
                 modifier = Modifier.padding(it)
             )
         }
     }
 }
+
+@Composable
+private fun SetLanguage(locale: String) {
+    val configuration = LocalConfiguration.current
+    configuration.setLocale(Locale(locale))
+    val resources = LocalContext.current.resources
+    resources.updateConfiguration(configuration, resources.displayMetrics)
+}
+
 
 
 @Composable
@@ -171,7 +185,7 @@ fun PortfolioBottomNav(
             BottomNavigationItem(
                 selected = current == it.route,
                 onClick = { navToRoute(it.route) },
-                icon = { Text(text = it.route) },
+                icon = { Text(text = stringResource(id = it.res)) },
             )
         }
     }
@@ -180,7 +194,13 @@ fun PortfolioBottomNav(
 class PortfolioAppState(
     val scaffoldState: ScaffoldState,
     val navHostController: NavHostController,
+    val locale : String
 ) {
+    var local = locale
+
+    fun setLocale(locale: String){
+        local = locale
+    }
 
     var detailProject = ""
     fun setDetailProjectName(s: String) {
@@ -228,8 +248,9 @@ class PortfolioAppState(
 fun rememberPortfolioAppState(
     scaffoldState: ScaffoldState = rememberScaffoldState(),
     navHostController: NavHostController = rememberNavController(),
+    locale :String = "en"
 ) = remember(scaffoldState, navHostController) {
-    PortfolioAppState(scaffoldState, navHostController)
+    PortfolioAppState(scaffoldState, navHostController,locale)
 }
 
 @Composable

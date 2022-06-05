@@ -1,3 +1,16 @@
 <resources>
     <string name="app_name">WonjoonPotfolio</string>
+
+    <string name="home">Home</string>
+    <string name="history">History</string>
+    <string name="setting">Setting</string>
+
+
+
+    <string name="test">hi</string>
+    <string name="career">Career</string>
+    <string name="introduce">Introduce</string>
+    <string name="project">Project</string>
+    <string name="tmi">TMI</string>
+
 </resources>

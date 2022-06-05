@@ -20,6 +20,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import coil.compose.AsyncImage
@@ -80,17 +81,16 @@ fun IAmRoute(
 
             ItemForText(
                 modifier = Modifier.defaultMinSize(150.dp),
-                title = "경력",
+                title = stringResource(id = R.string.career),
                 contents = viewState.before.replace("\\n","\n")
             )
 
         }
 
         item {
-
                 ItemForText(
                     modifier = Modifier.defaultMinSize(150.dp),
-                    title = "소개",
+                    title = stringResource(id = R.string.introduce),
                     contents = viewState.introduce.replace("\\n","\n")
                 )
 
@@ -99,9 +99,10 @@ fun IAmRoute(
 
         item {
             TextWithSubTile(
-                text = "프로젝트",
+                text = stringResource(id = R.string.project),
                 modifier = Modifier.padding(vertical = 5.dp),
-                color = RedColor
+                color = RedColor,
+                style = MaterialTheme.typography.subtitle2
             )
         }
 
@@ -119,7 +120,7 @@ fun IAmRoute(
 
         item {
             ItemForText(
-                title = "TMI",
+                title = stringResource(id = R.string.tmi),
                 contents = ""
             )
         }

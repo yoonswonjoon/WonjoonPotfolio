@@ -3,6 +3,7 @@ package com.vlm.wonjoonpotfolio.di
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.firebase.firestore.FirebaseFirestore
 import com.vlm.wonjoonpotfolio.data.ImgData.ImgDataRepository
 import com.vlm.wonjoonpotfolio.data.ImgData.ImgDataSource
@@ -26,24 +27,29 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ActivityComponent
 import dagger.hilt.android.components.ViewModelComponent
+import javax.inject.Singleton
 
 @Module
 @InstallIn(ActivityComponent::class)
 object IAmDi{
+    @JvmStatic
+    @Singleton
     @Provides
     fun provideIamRepository(
         remoteDataSource: IAmTextDataRemoteDataSourceImpl
     ) : IAmTextDataRepository {
         return IAmTextDataRepository(remoteDataSource)
     }
-
+    @JvmStatic
+    @Singleton
     @Provides
     fun provideImgRepository(
         imgDataSource: ImgDataSourceImpl
     ) : ImgDataRepository{
         return ImgDataRepository(imgDataSource)
     }
-
+    @JvmStatic
+    @Singleton
     @Provides
     fun provideGetIAmDataUseCase(
         iAmRepository: IAmTextDataRepository,
@@ -51,7 +57,8 @@ object IAmDi{
     ) : GetIAmDataUseCase {
         return GetIAmDataUseCase(iAmRepository,imgDataRepository)
     }
-
+    @JvmStatic
+    @Singleton
     @Provides
     fun provideGetMultiIAmDataUseCase(
         iAmRepository: IAmTextDataRepository,
@@ -59,76 +66,91 @@ object IAmDi{
     ) : GetMutlipleIAmDataUsecase {
         return GetMutlipleIAmDataUsecase(iAmRepository,imgDataRepository)
     }
-
+    @JvmStatic
+    @Singleton
     @Provides
     fun provideUserDataSource(
         firebase : FirebaseFirestore
     ) = UserDataSource(firebase)
-
+    @JvmStatic
+    @Singleton
     @Provides
     fun providesUserRepository(
         userDataSource: UserDataSource
     ) = UserRepository(userDataSource)
-
+    @JvmStatic
+    @Singleton
     @Provides
     fun providesGetUserUseCase(
         userRepository: UserRepository,
-        imgDataRepository: ImgDataRepository
-    ) = GetUserUseCase(userRepository,imgDataRepository)
-
+        imgDataRepository: ImgDataRepository,
+        firebaseCrashlytics: FirebaseCrashlytics
+    ) = GetUserUseCase(userRepository,imgDataRepository,firebaseCrashlytics)
+    @JvmStatic
+    @Singleton
     @Provides
     fun provideProjectDataSource(
         firebase : FirebaseFirestore
     ) = ProjectDataSourceImpl(firebase)
-
+    @JvmStatic
+    @Singleton
     @Provides
     fun providesProjectRepository(
         projectDataSourceImpl: ProjectDataSourceImpl
     ) = ProjectRepository(projectDataSourceImpl)
-
+    @JvmStatic
+    @Singleton
     @Provides
     fun providesGetAllProjects(
         projectRepository: ProjectRepository,
-        imgDataRepository: ImgDataRepository
-    ) = GetAllProjects(projectRepository,imgDataRepository)
-
+        imgDataRepository: ImgDataRepository,
+        firebaseCrashlytics: FirebaseCrashlytics
+    ) = GetAllProjects(projectRepository,imgDataRepository,firebaseCrashlytics)
+    @JvmStatic
+    @Singleton
     @Provides
     fun providesLoginDataSource(
         firebaseAuth: FirebaseAuth
     ) = LoginDataSource(firebaseAuth)
-
+    @JvmStatic
+    @Singleton
     @Provides
     fun providesLoginRepository(
         loginDataSource: LoginDataSource,
-        loginDataStore: DataStore<Preferences>
-    ) = LoginRepository(loginDataSource,loginDataStore)
-
-
+        loginDataStore: DataStore<Preferences>,
+        firebaseCrashlytics: FirebaseCrashlytics
+    ) = LoginRepository(loginDataSource, loginDataStore, firebaseCrashlytics)
+    @JvmStatic
+    @Singleton
     @Provides
     fun providesProjectEvaluateRepository(
         projectEvaluateDataSource: ProjectEvaluateDataSourceImpl
     ) = ProjectEvaluateRepository(projectEvaluateDataSource)
-
+    @JvmStatic
+    @Singleton
     @Provides
     fun providesGetProject(
-        projectRepository: ProjectRepository
-    ) = GetProject(projectRepository)
+        projectRepository: ProjectRepository,
+        firebaseCrashlytics: FirebaseCrashlytics
+    ) = GetProject(projectRepository,firebaseCrashlytics)
 }
 
 @Module
 @InstallIn(ViewModelComponent::class)
 abstract class IAmDataSourceModule{
+
+//    @Singleton
     @Binds
     abstract fun bindIAmDataSource(
         iAmFirebaseApi: IAmTextDataRemoteDataSourceImpl
     ) : IAmTextDataRemoteDataSource
 
-
+//    @Singleton
     @Binds
     abstract fun bindImgDataSource(
         imgDataSource: ImgDataSourceImpl
     ) : ImgDataSource
-
+//    @Singleton
     @Binds
     abstract fun bindProjectEvaluateDataSource(
         projectEvaluateDataSource : ProjectEvaluateDataSourceImpl

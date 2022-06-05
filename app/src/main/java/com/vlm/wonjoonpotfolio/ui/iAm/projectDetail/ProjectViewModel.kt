@@ -19,8 +19,7 @@ import java.util.*
 import javax.inject.Inject
 
 
-
-enum class ProjectDetailPage{
+enum class ProjectDetailPage {
     DetailPage,
     EvaluationPage,
     EditEvaluationPage
@@ -34,15 +33,15 @@ data class ProjectViewState(
     val isLoading: Boolean = true,
     val errors: List<PortfolioError> = listOf(),
     val currentDetailRoute: ProjectDetailPage = ProjectDetailPage.DetailPage,
-    val evaluationDialogShow : Boolean = false,
-    val evaluateCancelDialogShow : Boolean = false,
-    val evaluationData : ProjectEvaluateData = ProjectEvaluateData(),
-    val evaluateProcess : Boolean = false,
-    val amIin : Boolean? = null,
-    val evaluateList : List<ProjectEvaluateData> = listOf(),
+    val evaluationDialogShow: Boolean = false,
+    val evaluateCancelDialogShow: Boolean = false,
+    val evaluationData: ProjectEvaluateData = ProjectEvaluateData(),
+    val evaluateProcess: Boolean = false,
+    val amIin: Boolean? = null,
+    val evaluateList: List<ProjectEvaluateData> = listOf(),
     val myEvaluateData: ProjectEvaluateData = ProjectEvaluateData(),
-    val totalPoint : Double = 0.0,
-    val totalParticipant : Int = 0
+    val totalPoint: Double = 0.0,
+    val totalParticipant: Int = 0,
 )
 
 @HiltViewModel
@@ -52,7 +51,7 @@ constructor(
     private val getUserUseCase: GetUserUseCase,
     private val loginCheckUserCase: LoginCheckUserCase,
     private val projectEvaluateRepository: ProjectEvaluateRepository,
-    private val getProject: GetProject
+    private val getProject: GetProject,
 ) :
     ViewModel() {
     private val _viewState = MutableStateFlow(
@@ -79,6 +78,8 @@ constructor(
                 stackMap = map,
                 isLoading = false
             )
+        }.catch {
+
         }.launchIn(viewModelScope)
     }
 
@@ -88,7 +89,7 @@ constructor(
         )
     }
 
-    fun evaluation(point: Int,msg : String) {
+    fun evaluation(point: Int, msg: String) {
         if (point <= 0) {
             addErrors(
                 error = PortfolioError(
@@ -107,7 +108,7 @@ constructor(
                         uid = loginCheckUserCase.invoke()?.uid!!,
                     )
                 )
-            }catch (e:Exception){
+            } catch (e: Exception) {
                 addErrors(PortfolioError(msg = "로그인이 필요한 기능입니다. 메인 화면에서 로그인을 해주세요"))
             }
 
@@ -143,92 +144,111 @@ constructor(
     fun closeEvaluation() {
         _viewState.value = _viewState.value.copy(
             currentDetailRoute = ProjectDetailPage.DetailPage,
-            evaluationData =  ProjectEvaluateData()
+            evaluationData = ProjectEvaluateData()
         )
     }
 
 
-    fun proceedEvaluation(projectUid : String) {
-        if(loginCheckUserCase.invoke() != null){
+    fun proceedEvaluation(projectUid: String) {
+        if (loginCheckUserCase.invoke() != null) {
             projectEvaluateRepository.writeEvaluate(
                 uid = _viewState.value.evaluationData.uid,
                 projectId = projectUid,
                 evaluate = _viewState.value.evaluationData
             ).onEach { result ->
-                when(result){
-                    is ResultState.Loading ->{
+                when (result) {
+                    is ResultState.Loading -> {
                         _viewState.value = _viewState.value.copy(evaluateProcess = true)
                     }
-                    is ResultState.Success ->{
-                        if(result.data){
-                            loadEvaluateList(projectUid = projectUid, forced = true, userEid = _viewState.value.evaluationData.eid)
-                            _viewState.value = _viewState.value.copy(evaluateProcess = false , amIin = true, myEvaluateData = _viewState.value.evaluationData)
+                    is ResultState.Success -> {
+                        if (result.data) {
+                            loadEvaluateList(projectUid = projectUid,
+                                forced = true,
+                                userEid = _viewState.value.evaluationData.eid)
+                            _viewState.value = _viewState.value.copy(evaluateProcess = false,
+                                amIin = true,
+                                myEvaluateData = _viewState.value.evaluationData)
                             addErrors(PortfolioError(msg = "정상 등록 되었습니다."))
-                        }else{
+                        } else {
                             _viewState.value = _viewState.value.copy(evaluateProcess = false)
                             addErrors(PortfolioError(msg = "실패"))
                         }
                     }
-                    is ResultState.Error ->{
+                    is ResultState.Error -> {
                         _viewState.value = _viewState.value.copy(evaluateProcess = false)
                         addErrors(PortfolioError(msg = result.message))
                     }
                 }
-            }.launchIn(viewModelScope)
-        }else{
+            }.catch { e ->
+                addErrors(PortfolioError(msg = e.message ?: "Error"))
+            }
+                .launchIn(viewModelScope)
+        } else {
             addErrors(PortfolioError(msg = "로그인이 필요한 기능입니다. 메인 화면에서 로그인을 해주세요"))
         }
         _viewState.value = _viewState.value.copy(evaluationDialogShow = false)
     }
 
-    fun amIin(projectUid: String){
-        if(_viewState.value.amIin ==null){
+    fun amIin(projectUid: String) {
+        if (_viewState.value.amIin == null) {
             try {
                 val user = loginCheckUserCase.invoke()!!
-                projectEvaluateRepository.amIin(user.uid,projectUid)
+                projectEvaluateRepository.amIin(user.uid, projectUid)
                     .onEach {
                         _viewState.value = _viewState.value.copy(amIin = it)
-                        if(it == true) loadEvaluateList(userEid = user.email!!, projectUid = projectUid, forced = true)
+                        if (it == true) loadEvaluateList(userEid = user.email!!,
+                            projectUid = projectUid,
+                            forced = true)
+                    }
+                    .catch {
+
                     }
                     .launchIn(viewModelScope)
-            }catch (e:Exception){
+            } catch (e: Exception) {
 
             }
         }
     }
 
     fun loadEvaluateList(
-        userEid : String,
-        forced : Boolean = true,
-        projectUid: String
-    ){
+        userEid: String,
+        forced: Boolean = true,
+        projectUid: String,
+    ) {
         // 로드하는데 이미 데이터 있으면 무시 등등 기능 추가
-        if(forced || (_viewState.value.evaluateList.isEmpty() && !forced)){
+        if (forced || (_viewState.value.evaluateList.isEmpty() && !forced)) {
             viewModelScope.launch {
-                getProject.invoke(projectUid)?.let{
-                    val point = it.accPoint.toDouble()/it.participantCount.toDouble()
-                    _viewState.value = _viewState.value.copy(totalPoint = point , totalParticipant = it.participantCount)
+                getProject.invoke(projectUid)?.let {
+                    val point = it.accPoint.toDouble() / it.participantCount.toDouble()
+                    _viewState.value = _viewState.value.copy(totalPoint = point,
+                        totalParticipant = it.participantCount)
                 }
             }
 
-            projectEvaluateRepository.getAllEvaluate(projectUid).onEach {  result ->
-                when(result){
-                    is ResultState.Loading ->{
+            projectEvaluateRepository.getAllEvaluate(projectUid).onEach { result ->
+                when (result) {
+                    is ResultState.Loading -> {
                         _viewState.value = _viewState.value.copy(evaluateProcess = true)
                     }
-                    is ResultState.Success ->{
-                        _viewState.value = _viewState.value.copy(evaluateProcess = false, evaluateList = result.data, myEvaluateData = result.data.filter { it.eid == userEid }.first())
+                    is ResultState.Success -> {
+                        _viewState.value = _viewState.value.copy(evaluateProcess = false,
+                            evaluateList = result.data,
+                            myEvaluateData = result.data.filter { it.eid == userEid }.first())
                     }
-                    is ResultState.Error ->{
+                    is ResultState.Error -> {
                         _viewState.value = _viewState.value.copy(evaluateProcess = false)
                         addErrors(PortfolioError(msg = result.message))
                     }
                 }
-            }.launchIn(viewModelScope)
+            }.catch {
+                _viewState.value = _viewState.value.copy(evaluateProcess = false)
+                addErrors(PortfolioError(msg = "Error"))
+            }
+                .launchIn(viewModelScope)
         }
     }
 
-    fun updateProject(){
+    fun updateProject() {
 
     }
 }
