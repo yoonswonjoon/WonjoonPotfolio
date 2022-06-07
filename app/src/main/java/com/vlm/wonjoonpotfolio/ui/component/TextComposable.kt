@@ -5,13 +5,15 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.ClickableText
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
+import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.materialIcon
+import androidx.compose.material.icons.rounded.ArrowBack
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -151,8 +153,29 @@ fun OutLinedBasicText(
             .background(outLinedColor)
             .padding(outLinedDp)
     ) {
-        Column(modifier = Modifier.padding(5.dp).background(color = contentColor)) {
+        Column(modifier = Modifier
+            .padding(5.dp)
+            .background(color = contentColor)) {
             composable()
         }
+    }
+}
+
+@Composable
+fun SettingMenuText(icon: ImageVector?,text: String, onClick : ()-> Unit){
+    Column(modifier = Modifier
+        .clickable { onClick() }
+        .padding(start = 15.dp, end = 15.dp)
+    ) {
+        Spacer(modifier = Modifier.height(5.dp))
+        Row {
+            if(icon != null) {
+                Icon(imageVector = icon, contentDescription = null)
+                Spacer(modifier = Modifier.width(10.dp))
+            }
+            TextWithSubTile(text = text)
+        }
+        Spacer(modifier = Modifier.height(5.dp))
+        Divider()
     }
 }

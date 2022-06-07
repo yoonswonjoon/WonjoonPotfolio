@@ -95,6 +95,7 @@ fun PortfolioMain(
 
             }
         }
+
         if(userState.loginDialogView){
             PortfolioLoginDialog(
                 onDismiss = userViewModel::loginClose,
@@ -105,6 +106,18 @@ fun PortfolioMain(
                     )
                 }
             )
+        }
+
+        if (userState.userLoginFailedDialog) {
+            DialogBasic(
+                onDismiss = userViewModel::dismissLoginFailedD,
+                onOk = userViewModel::dismissLoginFailedD,
+                okText = stringResource(id = R.string.confirm),
+                noText =stringResource(id = R.string.cancel),
+                justOkBtn = true
+            ) {
+                Text(text = stringResource(id = R.string.login_error))
+            }
         }
 
         Scaffold(
@@ -164,6 +177,7 @@ fun PortfolioMain(
             }
 
             PortfolioNavGraph(
+                userViewModel,
                 appState,
                 selectCountry = userViewModel::setLocale,
                 modifier = Modifier.padding(it)

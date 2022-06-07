@@ -4,7 +4,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.vlm.wonjoonpotfolio.data.AppDataRepository
 import com.vlm.wonjoonpotfolio.data.login.LoginRepository
+import com.vlm.wonjoonpotfolio.data.user.User
 import com.vlm.wonjoonpotfolio.domain.ResultState
+import com.vlm.wonjoonpotfolio.domain.UserLoginStep
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -17,7 +19,9 @@ data class LoginViewStates(
     val email: String? = null,
     val newUser: Boolean = false,
     val loginComplete : Boolean = false,
-    val loginDialogView : Boolean = false
+    val loginDialogView : Boolean = false,
+    val user : User? = null,
+    val userLoginFailedDialog : Boolean = false
 ) {
 
 }
@@ -69,6 +73,7 @@ constructor(
                         email = resultState.data,
                         loginComplete =true
                     )
+                    checkUserDataExist()
                 }
                 is ResultState.Error -> {
                     _loginViewState.value = _loginViewState.value.copy(
@@ -99,6 +104,7 @@ constructor(
                             loginComplete = true,
                             loginDialogView = false
                         )
+                        checkUserDataExist()
                     }
                     is ResultState.Error -> {
                         _loginViewState.value = _loginViewState.value.copy(
@@ -137,6 +143,7 @@ constructor(
                         newUser = false,
                         loginComplete = true
                     )
+                    checkUserDataExist()
                 }
                 is ResultState.Error -> {
                     _loginViewState.value = _loginViewState.value.copy(
@@ -180,6 +187,61 @@ constructor(
     fun loginClose(){
         _loginViewState.value = _loginViewState.value.copy(
             loginDialogView = false,
+        )
+    }
+
+    fun checkUserDataExist(){
+        loginRepository.checkUserDataExist().onEach { result ->
+            when(result){
+                is UserLoginStep.DataExist->{ // 존재 OK
+                    _loginViewState.value = _loginViewState.value.copy(
+                        user = result.data,
+                    )
+                }
+                is UserLoginStep.DataNull->{ // 데이터 없으니 집어넣자
+                    setUserData()
+                }
+                is UserLoginStep.Loading->{
+
+                }
+            }
+        }.launchIn(viewModelScope)
+    }
+
+    private fun setUserData(){
+        val u1 = loginRepository.checkLogin()
+        if (u1 !=null){
+            try {
+                val u2 = User(
+                    eid = u1.email!!,
+                    uid = u1.uid
+                )
+                loginRepository.setUserData(u2).map {
+                    if (!it){
+                        _loginViewState.value = _loginViewState.value.copy(
+                            userLoginFailedDialog = true,
+                        )
+                        logOut()
+                    }
+                }.launchIn(viewModelScope)
+            }catch (e:Exception){
+
+            }
+        }else{
+
+        }
+    }
+
+    fun logOut() {
+        loginRepository.logOut()
+        _loginViewState.value = _loginViewState.value.copy(
+            loginComplete = false,
+        )
+    }
+
+    fun dismissLoginFailedD(){
+        _loginViewState.value = _loginViewState.value.copy(
+            userLoginFailedDialog = false,
         )
     }
 }

@@ -7,7 +7,8 @@ data class User(
     val name : String = "",
     val nickname: String = "",
     val uri : String = "",
-    val phone : String = " "
+    val phone : String = "",
+    val uid : String = ""
 ) {
     constructor() : this("")
 
@@ -31,4 +32,3 @@ data class UserForUi(
 ) {
 
 }
-

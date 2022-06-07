@@ -39,7 +39,14 @@
     <string name="cancel">Cancel</string>
     <string name="dont_know">Dont know</string>
     <string name="log_in">Login</string>
+    <string name="log_out">LogOut</string>
     <string name="not_in_log_in">Guest</string>
     <string name="kakao_sign_in">Do you want to create an ID (signup is completed based on kakao email)</string>
     <string name="create_id">Create</string>
+    <string name="login_error">No data was created on the server</string>
+    <string name="locale">language</string>
+    <string name="kr">한국어</string>
+    <string name="en">English</string>
+    <string name="version_check">Version Check</string>
+    <string name="sign_out">Sign out</string>
 </resources>

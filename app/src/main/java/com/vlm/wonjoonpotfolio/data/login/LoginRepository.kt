@@ -4,12 +4,17 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import com.google.firebase.crashlytics.FirebaseCrashlytics
+import com.vlm.wonjoonpotfolio.data.user.User
 import com.vlm.wonjoonpotfolio.domain.PreferencesKey
 import com.vlm.wonjoonpotfolio.domain.ResultState
+import com.vlm.wonjoonpotfolio.domain.UserLoginStep
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
+
+
+
 
 class LoginRepository @Inject constructor(
     private val loginDataSource: LoginDataSource,
@@ -110,4 +115,23 @@ class LoginRepository @Inject constructor(
 
     fun checkLogin() = loginDataSource.checkLogin()
 
+    fun checkUserDataExist() = flow {
+        emit(UserLoginStep.loading())
+        val data = loginDataSource.checkUserDataExist()
+        if(data== null){
+            emit(UserLoginStep.dataNull())
+        }else{
+            emit(UserLoginStep.dataExist(data))
+        }
+    }
+
+    fun setUserData(user : User) = flow {
+        var success = false
+        loginDataSource.setUserData(user).addOnSuccessListener {
+            success = true
+        }.await()
+        emit(success)
+    }
+
+    fun logOut() = loginDataSource.logOut()
 }

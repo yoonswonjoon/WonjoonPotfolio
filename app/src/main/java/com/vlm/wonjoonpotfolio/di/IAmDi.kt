@@ -111,8 +111,9 @@ object IAmDi{
     @Singleton
     @Provides
     fun providesLoginDataSource(
-        firebaseAuth: FirebaseAuth
-    ) = LoginDataSource(firebaseAuth)
+        firebaseAuth: FirebaseAuth,
+        firebaseFirestore: FirebaseFirestore
+    ) = LoginDataSource(firebaseAuth,firebaseFirestore)
     @JvmStatic
     @Singleton
     @Provides
