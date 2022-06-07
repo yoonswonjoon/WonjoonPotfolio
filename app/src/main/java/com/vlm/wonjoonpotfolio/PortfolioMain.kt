@@ -5,6 +5,7 @@ import android.content.Context
 import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -18,6 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
@@ -39,6 +41,8 @@ import com.vlm.wonjoonpotfolio.ui.PortfolioDestination.HISTORY
 import com.vlm.wonjoonpotfolio.ui.PortfolioDestination.I_AM
 import com.vlm.wonjoonpotfolio.ui.PortfolioDestination.SETTING
 import com.vlm.wonjoonpotfolio.ui.PortfolioNavGraph
+import com.vlm.wonjoonpotfolio.ui.component.CircularProcessingDialog
+import com.vlm.wonjoonpotfolio.ui.component.DialogBasic
 import com.vlm.wonjoonpotfolio.ui.theme.WonjoonPotfolioTheme
 import java.lang.Exception
 import java.util.*
@@ -53,7 +57,6 @@ sealed class Screen(val route: String, val res: Int) {
     object ChatMain : Screen("ChatMain",R.string.home)
 
     object EvaluateMain : Screen("EvaluateMain",R.string.home)
-
     object SettingMain : Screen("SettingMain",R.string.setting)
 }
 
@@ -81,10 +84,28 @@ fun PortfolioMain(
         val currentRoute =
             navBackStackEntry?.destination?.route ?: I_AM
 
-        var locale by remember {
-            mutableStateOf("en")
-        }
+        val locale by userViewModel.localeData.collectAsState()
+
         SetLanguage(locale = locale)
+
+        if(userState.isLoading){
+            CircularProcessingDialog(
+
+            ){
+
+            }
+        }
+        if(userState.loginDialogView){
+            PortfolioLoginDialog(
+                onDismiss = userViewModel::loginClose,
+                onLogin = {
+                    loginPortfolio(
+                        context = context,
+                        login = userViewModel::login
+                    )
+                }
+            )
+        }
 
         Scaffold(
             modifier = Modifier,
@@ -111,12 +132,9 @@ fun PortfolioMain(
                             userState.isLoading,
                             name = userState.name,
                             loginComplete = userState.loginComplete,
-                            context = context,
-                            login = { id, password ->
-                                if (id != null && password != null) userViewModel.login(id,
-                                    password)
-                            }
+                            login = userViewModel::onLoginOpen
                         )
+                        Spacer(modifier = Modifier.width(10.dp))
                     }
                 }
 
@@ -133,31 +151,21 @@ fun PortfolioMain(
             },
             scaffoldState = appState.scaffoldState,
         ) {
-
             if (userState.newUser) {
-                Dialog(onDismissRequest = { userViewModel.cancelSignIn() }) {
-                    Surface(modifier = Modifier, shape = RoundedCornerShape(5.dp)) {
-                        Column() {
-                            Text(text = "아이디 생성하시겠습니까(kakao 이메일을 기준으로 가입이 완료됩니다)?")
-                            Row() {
-                                TextButton(onClick = { userViewModel.signIn() }) {
-                                    Text(text = "아이디 생성하기")
-                                }
-                                TextButton(onClick = { userViewModel.cancelSignIn() }) {
-                                    Text(text = "취소")
-                                }
-                            }
-
-                        }
-                    }
+                DialogBasic(
+                    onDismiss = userViewModel::cancelSignIn,
+                    onOk = userViewModel::signIn,
+                    okText = stringResource(id = R.string.create_id),
+                    noText =stringResource(id = R.string.cancel),
+                    justOkBtn = false
+                ) {
+                    Text(text = stringResource(id = R.string.kakao_sign_in))
                 }
             }
 
             PortfolioNavGraph(
                 appState,
-                selectCountry = {
-                                locale = "kr"
-                },
+                selectCountry = userViewModel::setLocale,
                 modifier = Modifier.padding(it)
             )
         }
@@ -193,15 +201,8 @@ fun PortfolioBottomNav(
 
 class PortfolioAppState(
     val scaffoldState: ScaffoldState,
-    val navHostController: NavHostController,
-    val locale : String
+    val navHostController: NavHostController
 ) {
-    var local = locale
-
-    fun setLocale(locale: String){
-        local = locale
-    }
-
     var detailProject = ""
     fun setDetailProjectName(s: String) {
         detailProject = s
@@ -247,10 +248,9 @@ class PortfolioAppState(
 @Composable
 fun rememberPortfolioAppState(
     scaffoldState: ScaffoldState = rememberScaffoldState(),
-    navHostController: NavHostController = rememberNavController(),
-    locale :String = "en"
+    navHostController: NavHostController = rememberNavController()
 ) = remember(scaffoldState, navHostController) {
-    PortfolioAppState(scaffoldState, navHostController,locale)
+    PortfolioAppState(scaffoldState, navHostController)
 }
 
 @Composable
@@ -258,8 +258,8 @@ fun UserStateBox(
     isLoading: Boolean,
     name: String?,
     loginComplete: Boolean,
-    context: Context,
-    login: (String?, String?) -> Unit,
+//    context: Context,
+    login: (/*String?, String?*/) -> Unit,
 ) {
     Box(modifier = Modifier.fillMaxSize()) {
         val n = if (isLoading) {
@@ -270,59 +270,85 @@ fun UserStateBox(
             verticalAlignment = Alignment.CenterVertically) {
             if (!loginComplete) {
                 Button(onClick = {
-                    val callback: (OAuthToken?, Throwable?) -> Unit = { token, error ->
-                        if (error != null) {
-                            Log.e(ContentValues.TAG, "카카오계정으로 로그인 실패", error)
-                        } else if (token != null) {
-                            UserApiClient.instance.me { user, e ->
-                                if (e != null) {
-                                    login(
-                                        e.message ?: "none", e.message ?: "none"
-                                    )
-                                }
-                                try {
-                                    login(user?.kakaoAccount?.email, user?.id?.toString())
-                                } catch (e: Exception) {
-                                    login(e.message ?: "none", e.message ?: "none")
-                                }
-                            }
-                            Log.i(ContentValues.TAG, "카카오계정으로 로그인 성공 ${token.accessToken}")
-                        }
-                    }
-
-                    // 카카오톡이 설치되어 있으면 카카오톡으로 로그인, 아니면 카카오계정으로 로그인
-                    if (UserApiClient.instance.isKakaoTalkLoginAvailable(context)) {
-                        Log.e(ContentValues.TAG, "카톡 로긴")
-                        UserApiClient.instance.loginWithKakaoTalk(context) { token, error ->
-                            if (error != null) {
-                                Log.e(ContentValues.TAG, "카카오톡으로 로그인 실패", error)
-
-                                // 사용자가 카카오톡 설치 후 디바이스 권한 요청 화면에서 로그인을 취소한 경우,
-                                // 의도적인 로그인 취소로 보고 카카오계정으로 로그인 시도 없이 로그인 취소로 처리 (예: 뒤로 가기)
-                                if (error is ClientError && error.reason == ClientErrorCause.Cancelled) {
-                                    return@loginWithKakaoTalk
-                                }
-
-                                // 카카오톡에 연결된 카카오계정이 없는 경우, 카카오계정으로 로그인 시도
-                                UserApiClient.instance.loginWithKakaoAccount(context,
-                                    callback = callback)
-                            } else if (token != null) {
-                                Log.i(ContentValues.TAG, "카카오톡으로 로그인 성공 ${token.accessToken}")
-                            }
-                        }
-                    } else {
-                        Log.e(ContentValues.TAG, "카톡 이메일 로긴")
-                        UserApiClient.instance.loginWithKakaoAccount(context, callback = callback)
-                    }
-
-
+                    login()
                 }) {
-                    Text(text = "회원가입")
+                    Text(text = stringResource(id = R.string.log_in))
                 }
             }
-            Text(text = name ?: "익명사용자", modifier = Modifier)
 
+            Text(text = name ?: stringResource(id = R.string.not_in_log_in), modifier = Modifier)
+        }
+    }
+}
+
+@Composable
+fun PortfolioLoginDialog(
+    onDismiss:()->Unit,
+    onLogin : () -> Unit
+){
+    DialogBasic(
+        onDismiss = onDismiss,
+        onOk = onDismiss,
+        justOkBtn = true,
+        okText = stringResource(id = R.string.cancel),
+        noText =stringResource(id = R.string.cancel),
+    ) {
+        Image(
+            painter = painterResource(id = R.drawable.kakao_login_medium_narrow),
+            contentDescription = null,
+            modifier = Modifier
+                .width(300.dp)
+                .height(50.dp)
+                .clickable { onLogin() }
+        )
+    }
+}
+
+fun loginPortfolio(
+    context: Context,
+    login : (String?, String?) -> Unit
+){
+    val callback: (OAuthToken?, Throwable?) -> Unit = { token, error ->
+        if (error != null) {
+            Log.e(ContentValues.TAG, "카카오계정으로 로그인 실패", error)
+        } else if (token != null) {
+            UserApiClient.instance.me { user, e ->
+                if (e != null) {
+                    login(
+                        e.message ?: "none", e.message ?: "none"
+                    )
+                }
+                try {
+                    login(user?.kakaoAccount?.email, user?.id?.toString())
+                } catch (e: Exception) {
+                    login(e.message ?: "none", e.message ?: "none")
+                }
+            }
+            Log.i(ContentValues.TAG, "카카오계정으로 로그인 성공 ${token.accessToken}")
         }
     }
 
+    if (UserApiClient.instance.isKakaoTalkLoginAvailable(context)) {
+        Log.e(ContentValues.TAG, "카톡 로긴")
+        UserApiClient.instance.loginWithKakaoTalk(context) { token, error ->
+            if (error != null) {
+                Log.e(ContentValues.TAG, "카카오톡으로 로그인 실패", error)
+
+                // 사용자가 카카오톡 설치 후 디바이스 권한 요청 화면에서 로그인을 취소한 경우,
+                // 의도적인 로그인 취소로 보고 카카오계정으로 로그인 시도 없이 로그인 취소로 처리 (예: 뒤로 가기)
+                if (error is ClientError && error.reason == ClientErrorCause.Cancelled) {
+                    return@loginWithKakaoTalk
+                }
+
+                // 카카오톡에 연결된 카카오계정이 없는 경우, 카카오계정으로 로그인 시도
+                UserApiClient.instance.loginWithKakaoAccount(context,
+                    callback = callback)
+            } else if (token != null) {
+                Log.i(ContentValues.TAG, "카카오톡으로 로그인 성공 ${token.accessToken}")
+            }
+        }
+    } else {
+        Log.e(ContentValues.TAG, "카톡 이메일 로긴")
+        UserApiClient.instance.loginWithKakaoAccount(context, callback = callback)
+    }
 }

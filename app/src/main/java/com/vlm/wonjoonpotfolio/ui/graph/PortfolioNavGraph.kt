@@ -76,7 +76,12 @@ fun PortfolioNavGraph(
                 Button(onClick = {
                     selectCountry("kr")
                 }) {
-                    Text(text = Locale.current.toString())
+                    Text(text = "kr")
+                }
+                Button(onClick = {
+                    selectCountry("en")
+                }) {
+                    Text(text = "en")
                 }
                 Text(stringResource(id = R.string.test))
             }

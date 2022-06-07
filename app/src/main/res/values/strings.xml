@@ -13,4 +13,33 @@
     <string name="project">Project</string>
     <string name="tmi">TMI</string>
 
+    <!--프로젝트 디테일-->
+    <string name="download">Download</string>
+    <string name="question">Question</string>
+    <string name="stack">Stack</string>
+    <string name="project_introduce">Project Introduce</string>
+    <string name="what_i_learn">What I learn</string>
+    <string name="related_question">Related Questions</string>
+    <string name="git_hub">Git Hub</string>
+    <string name="participant">Participant</string>
+    <string name="pictures">pictures</string>
+    <string name="evaluating">evaluating as %1$d points</string>
+    <string name="do_evaluate">evaluating</string>
+    <string name="not_yet_support">This feature is not yet supported</string>
+    <string name="send_email">Send Email</string>
+    <string name="call">Call</string>
+    <string name="email">Email</string>
+    <string name="uri_failed">I think the URI address is wrong. Contact the developer</string>
+    <string name="not_yet_support_or_this_app">Currently not provided, or the corresponding application</string>
+    <string name="need_to_evaluate">You can check the average rating only after completing the evaluation</string>
+
+
+    <!--기본-->
+    <string name="confirm">Confirm</string>
+    <string name="cancel">Cancel</string>
+    <string name="dont_know">Dont know</string>
+    <string name="log_in">Login</string>
+    <string name="not_in_log_in">Guest</string>
+    <string name="kakao_sign_in">Do you want to create an ID (signup is completed based on kakao email)</string>
+    <string name="create_id">Create</string>
 </resources>

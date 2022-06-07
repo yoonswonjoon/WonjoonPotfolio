@@ -26,8 +26,10 @@ class LoginRepository @Inject constructor(
             emit(ResultState.loading())
             val id = loginDataStorage.data.first()[PreferencesKey.LOGIN_ID]
             val password = loginDataStorage.data.first()[PreferencesKey.LOGIN_PASSWORD]
+
             if(id!=null && password !=null){
                 var email : String? = null
+
                 loginDataSource.firebaseLogin(id,password).addOnSuccessListener {
                     email = it.user?.email
                     firebaseCrashlytics.setUserId(email?: "unKnown")
@@ -45,7 +47,7 @@ class LoginRepository @Inject constructor(
             }
         }catch (e:Exception){
             firebaseCrashlytics.log("$TAG : ${e.message?: "unknown"}")
-
+            emit(ResultState.error("login failed"))
         }
     }
 
@@ -71,7 +73,7 @@ class LoginRepository @Inject constructor(
             }
         }catch (e:Exception){
             firebaseCrashlytics.log("$TAG : ${e.message?: "unknown"}")
-//            emit(ResultState.error("login failed"))
+            emit(ResultState.error("login failed"))
         }
     }
 
@@ -80,16 +82,21 @@ class LoginRepository @Inject constructor(
             val id = loginDataStorage.data.first()[PreferencesKey.LOGIN_ID]!!
             val password = loginDataStorage.data.first()[PreferencesKey.LOGIN_PASSWORD]!!
             var email : String? = null
+            var success  = false
             loginDataSource.firebaseSignIn(id, password).addOnSuccessListener {
+                success = true
+            }.addOnFailureListener {
+
+            }.await()
+
+            if(success){
                 loginDataSource.firebaseLogin(id,password).addOnSuccessListener {
                     email = it.user?.email
                     firebaseCrashlytics.setUserId(email?: "unKnown")
                 }.addOnFailureListener {
                     firebaseCrashlytics.log("$TAG : ${it.message?: "unknown"}")
-                }
-            }.addOnFailureListener {
-
-            }.await()
+                }.await()
+            }
             if(email == null){
                 emit(ResultState.error("login failed"))
             }else{
@@ -97,7 +104,7 @@ class LoginRepository @Inject constructor(
             }
         }catch (e:Exception){
             firebaseCrashlytics.log("$TAG : ${e.message?: "unknown"}")
-//            emit(ResultState.error("login failed"))
+            emit(ResultState.error("login failed"))
         }
     }
 

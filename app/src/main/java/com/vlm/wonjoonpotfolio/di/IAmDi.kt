@@ -53,9 +53,10 @@ object IAmDi{
     @Provides
     fun provideGetIAmDataUseCase(
         iAmRepository: IAmTextDataRepository,
-        imgDataRepository: ImgDataRepository
+        imgDataRepository: ImgDataRepository,
+        firebaseCrashlytics: FirebaseCrashlytics
     ) : GetIAmDataUseCase {
-        return GetIAmDataUseCase(iAmRepository,imgDataRepository)
+        return GetIAmDataUseCase(iAmRepository,imgDataRepository,firebaseCrashlytics)
     }
     @JvmStatic
     @Singleton
@@ -120,6 +121,7 @@ object IAmDi{
         loginDataStore: DataStore<Preferences>,
         firebaseCrashlytics: FirebaseCrashlytics
     ) = LoginRepository(loginDataSource, loginDataStore, firebaseCrashlytics)
+
     @JvmStatic
     @Singleton
     @Provides

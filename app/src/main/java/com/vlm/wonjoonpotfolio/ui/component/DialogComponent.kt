@@ -42,22 +42,32 @@ fun DialogBasic(
                 .padding(15.dp)) {
                 composable()
 
+                Spacer(modifier = Modifier.height(10.dp))
                 Row(horizontalArrangement = if(justOkBtn)Arrangement.End else Arrangement.SpaceEvenly,
                 modifier = Modifier.fillMaxWidth()) {
                     if (!justOkBtn) {
-                        TextButton(onClick = { onDismiss() },
-                            modifier = Modifier.background(Color.Gray),
+                        Surface(
                             shape = RoundedCornerShape(8.dp)
-                        ) {
-                            Text(text = noText, color = Color.Black)
+                        ){
+                            TextButton(
+                                onClick = { onDismiss() },
+                                modifier = Modifier
+                                    .background(Color.Gray)
+                                    .clip(RoundedCornerShape(8.dp))
+                            ) {
+                                Text(text = noText, color = Color.Black)
+                            }
                         }
                     }
                     Surface(
                         shape = RoundedCornerShape(8.dp)
                     ) {
-                        TextButton(onClick = { onOk() }, modifier = Modifier
-                            .background(RedColor)
-                            .clip(RoundedCornerShape(8.dp))) {
+                        TextButton(
+                            onClick = { onOk() },
+                            modifier = Modifier
+                                .background(RedColor)
+                                .clip(RoundedCornerShape(8.dp))
+                        ) {
                             Text(text = okText, color = Color.White, modifier =  Modifier)
                         }
                     }
@@ -80,9 +90,10 @@ fun CircularProcessingDialog(onDismissRequest : () -> Unit){
     ) {
         Box(
             modifier = Modifier
-                .size(100.dp)
+                .fillMaxSize()
 //                .border((0.5).dp, Color.Red, roundedConerShapOption)
-                .clip(RoundedCornerShape(percent = 100))
+            ,
+            contentAlignment = Alignment.Center
                 //.background(ColorWhite)
         ){
 //            Image(painter = painterResource(

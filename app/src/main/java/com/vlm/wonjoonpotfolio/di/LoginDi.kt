@@ -1,5 +1,9 @@
 package com.vlm.wonjoonpotfolio.di
 
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
+import com.google.firebase.crashlytics.FirebaseCrashlytics
+import com.vlm.wonjoonpotfolio.data.AppDataRepository
 import com.vlm.wonjoonpotfolio.data.login.LoginRepository
 import com.vlm.wonjoonpotfolio.data.useCase.LoginCheckUserCase
 import dagger.Module
@@ -19,4 +23,11 @@ object LoginDi {
     ) : LoginCheckUserCase{
         return LoginCheckUserCase(loginRepository)
     }
+
+    @Singleton
+    @Provides
+    fun providesAppDataRepository(
+        appDataStore: DataStore<Preferences>,
+        firebaseCrashlytics: FirebaseCrashlytics
+    ) = AppDataRepository(appDataStore,firebaseCrashlytics)
 }

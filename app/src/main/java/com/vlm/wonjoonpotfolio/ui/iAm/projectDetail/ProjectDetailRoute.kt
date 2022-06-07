@@ -21,6 +21,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.vlm.wonjoonpotfolio.PortfolioAppState
@@ -68,8 +69,8 @@ fun ProjectDetailRoute(
             onDismiss = { projectViewModel.dismissError(error) },
             onOk = { projectViewModel.dismissError(error) },
             justOkBtn = true,
-            okText = "확인",
-            noText = "nono"
+            okText = stringResource(id = R.string.confirm),
+            noText = stringResource(id = R.string.cancel)
         ) {
             Text(text = error.msg)
             Spacer(modifier = Modifier.height(15.dp))
@@ -111,7 +112,8 @@ fun ProjectDetailRoute(
                     coroutineScope = coroutineScope,
                     selectUser = projectViewModel::selectUser,
                     openEvaluate = projectViewModel::openEvaluation,
-                    onClickQ = { projectViewModel.addErrors(PortfolioError(msg = "아직 지원하지 않는 기능입니다."))
+                    onClickQ = {
+                        projectViewModel.addErrors(PortfolioError(msg = context.resources.getString(R.string.not_yet_support)))
 //                        throw RuntimeException("Test Crash")
                     }
                 )
@@ -149,11 +151,11 @@ fun ProjectInteractButtons(
     Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
 
         Button(onClick = { onClickEvaluate() }) {
-            Text(text = "평가하기")
+            Text(text = stringResource(id = R.string.do_evaluate))
         }
 
         Button(onClick = { onClickQ() }) {
-            Text(text = "질문하기")
+            Text(text = stringResource(id = R.string.question))
         }
     }
 }
@@ -185,12 +187,12 @@ fun ProjectBottomSheet(user: UserForUi?, eid: (String) -> Unit, phone: (String) 
             color = BlueColor,
             modifier = Modifier.padding(10.dp))
         Divider()
-        TextWithSubTile(text = "전화하기", modifier = Modifier
+        TextWithSubTile(text = stringResource(id = R.string.call), modifier = Modifier
             .fillMaxWidth()
             .clickable { phone(user?.phone ?: "") }
             .padding(10.dp))
         Divider()
-        TextWithSubTile(text = "메일 보내기", modifier = Modifier
+        TextWithSubTile(text = stringResource(id = R.string.send_email), modifier = Modifier
             .fillMaxWidth()
             .clickable { eid(user?.eid ?: "") }
             .padding(10.dp))
@@ -219,8 +221,9 @@ fun ProjectStackView(
                 context.startActivity(intent)
             } catch (e: Exception) {
                 scope.launch {
-                    appState.scaffoldState.snackbarHostState.showSnackbar("URI주소가 잘못된 것 같아요. 개발자에게 연락주세요",
-                        "메일").apply {
+                    appState.scaffoldState
+                        .snackbarHostState
+                        .showSnackbar(context.resources.getString(R.string.uri_failed), context.resources.getString(R.string.email)).apply {
                         val intent = Intent(Intent.ACTION_SENDTO).apply {
                             data = Uri.parse("mailto:$eid")
                         }
@@ -247,7 +250,7 @@ fun OutLinedUriClickableView(
             if (uri == null || uri == "this") {
                 coroutineScope.launch {
                     scaffoldState.snackbarHostState.showSnackbar(
-                        "현재 제공하지 않거나, 해당 어플입니다."
+                        context.resources.getString(R.string.not_yet_support_or_this_app)
                     )
                 }
             } else {
@@ -273,10 +276,10 @@ fun EvaluateWithPoint(
     DialogBasic(
         onDismiss = { onDismiss() },
         onOk = { onOk() },
-        okText = "확인",
-        noText = "취소"
+        okText = stringResource(id = R.string.confirm),
+        noText = stringResource(id = R.string.cancel)
     ) {
-        Text(text = "${point}점으로 평가합니다")
+        Text(text = stringResource(id = R.string.evaluating,point)/*"${point}점으로 평가합니다"*/)
     }
 }
 
@@ -307,7 +310,7 @@ fun ProjectTopBar(
             }
 
         })
-        Text(text = "Project")
+        Text(text = stringResource(id = R.string.project))
         Text(text = appState.detailProject)
 
     }
@@ -380,7 +383,7 @@ fun ProjectDetailMain(
                             scaffoldState = appState.scaffoldState,
                             coroutineScope = coroutineScope,
                         ) {
-                            TextWithMainBody(text = "다운로드")
+                            TextWithMainBody(text = stringResource(id = R.string.download))
                         }
                         Spacer(modifier = Modifier.width(10.dp))
                         OutLinedUriClickableView(
@@ -389,13 +392,13 @@ fun ProjectDetailMain(
                             scaffoldState = appState.scaffoldState,
                             coroutineScope = coroutineScope,
                         ) {
-                            TextWithMainBody(text = "git")
+                            TextWithMainBody(text = stringResource(id = R.string.git_hub))
                         }
                     }
 
-                    TextWithMainBody(text = uiState?.long ?: "알 수 없음.")
+                    TextWithMainBody(text = uiState?.long ?: stringResource(id = R.string.dont_know))
 
-                    TextWithMainBody(text = "제작인원")
+                    TextWithMainBody(text = stringResource(id = R.string.participant))
                     if (!viewState.isLoading) {
                         Row(horizontalArrangement = Arrangement.spacedBy(5.dp)) {
                             viewState.list.forEach {
@@ -423,7 +426,7 @@ fun ProjectDetailMain(
                     }
                 )
 
-                TextTitleWithBodyVertical(title = "Stack",
+                TextTitleWithBodyVertical(title = stringResource(id = R.string.stack),
                     titleColor = RedColor,
                     modifier = Modifier.padding(5.dp),
                     body = uiState?.projectDetail) {
@@ -434,7 +437,7 @@ fun ProjectDetailMain(
                         viewState.selectedUser?.eid ?: "...")
                 }
 
-                TextTitleWithBodyVertical(title = "프로젝트 소개",
+                TextTitleWithBodyVertical(title = stringResource(id = R.string.project_introduce),
                     titleColor = RedColor,
                     modifier = Modifier.padding(5.dp),
                     body = uiState?.projectDetail) {
@@ -443,11 +446,11 @@ fun ProjectDetailMain(
                         style = MaterialTheme.typography.body1
                     )
                 }
-                TextWithSubTile(text = "관련 사진",
+                TextWithSubTile(text = stringResource(id = R.string.pictures),
                     color = RedColor,
                     modifier = Modifier.padding(5.dp))
 
-                TextTitleWithBodyVertical(title = "What I earn",
+                TextTitleWithBodyVertical(title = stringResource(id = R.string.what_i_learn),
                     titleColor = RedColor,
                     modifier = Modifier.padding(5.dp),
                     body = uiState?.projectDetail) {
@@ -464,7 +467,7 @@ fun ProjectDetailMain(
                 }
 
                 Divider()
-                TextWithSubTile(text = "관련 질문",
+                TextWithSubTile(text = stringResource(id = R.string.related_question),
                     color = RedColor,
                     modifier = Modifier.padding(5.dp))
             }

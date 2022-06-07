@@ -25,12 +25,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Outline
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
+import com.vlm.wonjoonpotfolio.R
 import com.vlm.wonjoonpotfolio.data.project.evaluate.ProjectEvaluateData
 import com.vlm.wonjoonpotfolio.domain.ModifierSetting
 import com.vlm.wonjoonpotfolio.ui.component.CircularProcessingDialog
@@ -147,7 +149,7 @@ fun NotYetEvaluated(
             }
         )
         Spacer(modifier = Modifier.height(15.dp))
-        Text(text = "평가를 마쳐야 평균 평점을 확인 할 수 있습니다")
+        Text(text = stringResource(id = R.string.need_to_evaluate))
         Spacer(modifier = Modifier.height(20.dp))
 
         Text(
@@ -253,7 +255,11 @@ fun ProjectEvaluatePointShower(
     participantCount : Int,
     myEvaluate: ProjectEvaluateData
 ){
-    val blockEid = myEvaluate.eid.replaceRange(3,myEvaluate.eid.length,"*****")
+    val blockEid = try{
+        myEvaluate.eid.replaceRange(3,myEvaluate.eid.length,"*****")
+    }catch (e:Exception){
+        "error"
+    }
     Column(horizontalAlignment = Alignment.CenterHorizontally,modifier =Modifier.fillMaxWidth()) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             PointStarItem(point = totalPoint, sizeInInt = 50)

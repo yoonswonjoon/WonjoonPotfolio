@@ -95,7 +95,10 @@ constructor(
                     _uiState.value = _uiState.value.copy(name = result.message, isLoading = false)
                 }
             }
-        }.launchIn(viewModelScope)
+        }.catch {
+
+        }
+            .launchIn(viewModelScope)
     }
 
     fun selectProject(projectData: ProjectData) {
