@@ -4,10 +4,10 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import com.google.firebase.crashlytics.FirebaseCrashlytics
+import com.google.firebase.internal.api.FirebaseNoSignedInUserException
+import com.google.firebase.storage.StorageException
 import com.vlm.wonjoonpotfolio.data.user.User
-import com.vlm.wonjoonpotfolio.domain.PreferencesKey
-import com.vlm.wonjoonpotfolio.domain.ResultState
-import com.vlm.wonjoonpotfolio.domain.UserLoginStep
+import com.vlm.wonjoonpotfolio.domain.*
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.tasks.await
@@ -26,112 +26,96 @@ class LoginRepository @Inject constructor(
         const val TAG = "LoginRepository"
     }
 
-    fun autoLogin() = flow {
-        try {
-            emit(ResultState.loading())
-            val id = loginDataStorage.data.first()[PreferencesKey.LOGIN_ID]
-            val password = loginDataStorage.data.first()[PreferencesKey.LOGIN_PASSWORD]
-
-            if(id!=null && password !=null){
-                var email : String? = null
-
-                loginDataSource.firebaseLogin(id,password).addOnSuccessListener {
-                    email = it.user?.email
-                    firebaseCrashlytics.setUserId(email?: "unKnown")
-                }.addOnFailureListener {
-                    firebaseCrashlytics.log("$TAG : ${it.message?: "unknown"}")
-                }.await()
-
-                if(email == null){
-                    emit(ResultState.error("login failed"))
-                }else{
-                    emit(ResultState.success(email))
-                }
-            }else{
-                emit(ResultState.error("login failed"))
-            }
-        }catch (e:Exception){
-            firebaseCrashlytics.log("$TAG : ${e.message?: "unknown"}")
-            emit(ResultState.error("login failed"))
-        }
-    }
-
-    fun firebaseLogin(id: String, password: String) = flow {
-        try {
-            emit(ResultState.loading())
-            loginDataStorage.edit { preferences ->
-                preferences[PreferencesKey.LOGIN_ID] = id
-                preferences[PreferencesKey.LOGIN_PASSWORD] = password
-            }
-            var email : String? = null
-            loginDataSource.firebaseLogin(id,password).addOnSuccessListener {
-                email = it.user?.email
-                firebaseCrashlytics.setUserId(email?: "unKnown")
-            }.addOnFailureListener {
-                firebaseCrashlytics.log("$TAG : ${it.message?: "unknown"}")
-            }.await()
-
-            if(email == null){
-                emit(ResultState.error("login failed"))
-            }else{
-                emit(ResultState.success(email))
-            }
-        }catch (e:Exception){
-            firebaseCrashlytics.log("$TAG : ${e.message?: "unknown"}")
-            emit(ResultState.error("login failed"))
-        }
-    }
-
-    fun firebaseSignIn() = flow {
-        try {
-            val id = loginDataStorage.data.first()[PreferencesKey.LOGIN_ID]!!
-            val password = loginDataStorage.data.first()[PreferencesKey.LOGIN_PASSWORD]!!
-            var email : String? = null
-            var success  = false
-            loginDataSource.firebaseSignIn(id, password).addOnSuccessListener {
-                success = true
-            }.addOnFailureListener {
-
-            }.await()
-
-            if(success){
-                loginDataSource.firebaseLogin(id,password).addOnSuccessListener {
-                    email = it.user?.email
-                    firebaseCrashlytics.setUserId(email?: "unKnown")
-                }.addOnFailureListener {
-                    firebaseCrashlytics.log("$TAG : ${it.message?: "unknown"}")
-                }.await()
-            }
-            if(email == null){
-                emit(ResultState.error("login failed"))
-            }else{
-                emit(ResultState.success(email))
-            }
-        }catch (e:Exception){
-            firebaseCrashlytics.log("$TAG : ${e.message?: "unknown"}")
-            emit(ResultState.error("login failed"))
-        }
-    }
-
     fun checkLogin() = loginDataSource.checkLogin()
 
-    fun checkUserDataExist() = flow {
-        emit(UserLoginStep.loading())
-        val data = loginDataSource.checkUserDataExist()
-        if(data== null){
-            emit(UserLoginStep.dataNull())
-        }else{
-            emit(UserLoginStep.dataExist(data))
+
+    fun logOut() = loginDataSource.logOut()
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    suspend fun logOutV2() {
+        loginDataSource.logOut()
+        clearLoginData()
+        // AppUser 클리어
+    }
+
+    suspend fun clearLoginData(){
+        loginDataStorage.edit { preferences->
+            preferences.remove(PreferencesKey.LOGIN_ID)
+            preferences.remove(PreferencesKey.LOGIN_PASSWORD)
         }
     }
 
-    fun setUserData(user : User) = flow {
-        var success = false
-        loginDataSource.setUserData(user).addOnSuccessListener {
-            success = true
-        }.await()
-        emit(success)
+    suspend fun getLoginData(): Pair<String?, String?> {
+        val id = loginDataStorage.data.first()[PreferencesKey.LOGIN_ID]
+        val password = loginDataStorage.data.first()[PreferencesKey.LOGIN_PASSWORD]
+
+        return id to password
     }
 
-    fun logOut() = loginDataSource.logOut()
+    suspend fun setLoginData(id:String, password: String) {
+        loginDataStorage.edit { preferences->
+            preferences[PreferencesKey.LOGIN_ID] = id
+            preferences[PreferencesKey.LOGIN_PASSWORD] = password
+        }
+    }
+
+    suspend fun loginV2(id: String, password: String) : LoginResult {
+        try {
+            val user = loginDataSource.firebaseLogin(id,password)
+                .await().user
+            user?.let { firebaseUser->
+                setLoginData(id,password)
+                val firebaseUserData = loginDataSource.getUserData()
+                firebaseUserData?.let{ userData ->
+                    return LoginResult(data = userData)
+                }?: kotlin.run {
+                    val newUserData = User(
+                        eid = firebaseUser.email!!,
+                        uid = firebaseUser.uid
+                    )
+                    var success = false
+                    loginDataSource.setUserData(newUserData).addOnSuccessListener{
+                        success = true
+                    }.await()
+                    if(success) {
+                        return LoginResult(data = newUserData)
+                    }else{
+                        logOutV2()
+                        return LoginResult(error = LoginErrorType.SettingBasicDataFailed)
+                    }
+                }
+            }?: return LoginResult(error = LoginErrorType.NotSignedIn)
+        }catch (e:Exception){
+            return LoginResult(error = LoginErrorType.NotSignedIn)
+//            return LoginResult(error = LoginErrorType.OtherError) 에러 세분화 과정 필요
+        }
+    }
+
+    suspend fun signIn(id: String, password: String): Boolean {
+        var success = false
+        loginDataSource.firebaseSignIn(id,password).addOnSuccessListener {
+            success= true
+        }.await()
+        return success
+    }
+
+    suspend fun autoLoginV2(): User? {
+        try {
+            val loginData = getLoginData()
+            if(loginData.first != null && loginData.second != null){
+                val login = loginV2(loginData.first!!,loginData.second!!)
+                if(login.data != null){
+                    return login.data
+                }else{
+                    return null
+                }
+            }
+            return null
+        }catch (e:Exception){
+            return null
+        }
+    }
+
 }

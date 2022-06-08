@@ -4,12 +4,12 @@ import android.content.ContentValues
 import android.content.Context
 import android.os.Build
 import android.util.Log
+import android.widget.Space
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ArrowBack
@@ -22,7 +22,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
@@ -33,7 +32,7 @@ import com.kakao.sdk.common.model.ClientError
 import com.kakao.sdk.common.model.ClientErrorCause
 import com.kakao.sdk.user.UserApiClient
 import com.vlm.wonjoonpotfolio.data.project.ProjectData
-import com.vlm.wonjoonpotfolio.ui.AppUserStateViewModel
+import com.vlm.wonjoonpotfolio.ui.AppMainViewModel
 import com.vlm.wonjoonpotfolio.ui.IamDestination.I_AM_MAIN
 import com.vlm.wonjoonpotfolio.ui.PortfolioDestination.CHAT
 import com.vlm.wonjoonpotfolio.ui.PortfolioDestination.EVALUATE
@@ -75,7 +74,7 @@ sealed class GraphList(val route: String) {
 fun PortfolioMain(
 ) {
     WonjoonPotfolioTheme {
-        val userViewModel: AppUserStateViewModel = viewModel()
+        val userViewModel: AppMainViewModel = viewModel()
         val userState by userViewModel.loginViewState.collectAsState()
         val context = LocalContext.current
         val appState = rememberPortfolioAppState()
@@ -89,11 +88,7 @@ fun PortfolioMain(
         SetLanguage(locale = locale)
 
         if(userState.isLoading){
-            CircularProcessingDialog(
-
-            ){
-
-            }
+            CircularProcessingDialog(){}
         }
 
         if(userState.loginDialogView){
@@ -106,6 +101,20 @@ fun PortfolioMain(
                     )
                 }
             )
+        }
+
+        if (userState.mainErrorList.isNotEmpty()) {
+            val error = userState.mainErrorList.first()
+            DialogBasic(
+                onDismiss = { userViewModel.dismissError(error) },
+                onOk = { userViewModel.dismissError(error) },
+                justOkBtn = true,
+                okText = stringResource(id = R.string.confirm),
+                noText = stringResource(id = R.string.cancel)
+            ) {
+                Text(text = error.msg)
+                Spacer(modifier = Modifier.height(15.dp))
+            }
         }
 
         if (userState.userLoginFailedDialog) {
@@ -141,13 +150,13 @@ fun PortfolioMain(
                             Spacer(modifier = Modifier.width(15.dp))
                             Text(text = appState.detailProject)
                         }
+
                         UserStateBox(
                             userState.isLoading,
                             name = userState.name,
                             loginComplete = userState.loginComplete,
                             login = userViewModel::onLoginOpen
                         )
-                        Spacer(modifier = Modifier.width(10.dp))
                     }
                 }
 
@@ -291,6 +300,8 @@ fun UserStateBox(
             }
 
             Text(text = name ?: stringResource(id = R.string.not_in_log_in), modifier = Modifier)
+
+            Spacer(modifier = Modifier.width(10.dp))
         }
     }
 }

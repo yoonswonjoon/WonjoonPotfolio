@@ -2,39 +2,31 @@ package com.vlm.wonjoonpotfolio.ui
 
 import android.os.Build
 import androidx.annotation.RequiresApi
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.Button
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.intl.Locale
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import coil.compose.AsyncImage
 import com.vlm.wonjoonpotfolio.GraphList
 import com.vlm.wonjoonpotfolio.PortfolioAppState
-import com.vlm.wonjoonpotfolio.R
 import com.vlm.wonjoonpotfolio.Screen
 import com.vlm.wonjoonpotfolio.ui.graph.childGraph.iAmNavGraph
 import com.vlm.wonjoonpotfolio.ui.history.HistoryViewModel
 import com.vlm.wonjoonpotfolio.ui.iAm.IAmViewModel
 import com.vlm.wonjoonpotfolio.ui.setting.SettingRoute
 import com.vlm.wonjoonpotfolio.ui.setting.SettingViewModel
-import java.util.*
 
 @RequiresApi(Build.VERSION_CODES.N)
 @Composable
 fun PortfolioNavGraph(
-    userStateViewModel: AppUserStateViewModel,
+    userStateViewModel: AppMainViewModel,
     appState: PortfolioAppState,
     selectCountry : (String) -> Unit,
     modifier : Modifier =  Modifier
@@ -75,7 +67,6 @@ fun PortfolioNavGraph(
 //            Text(text = "4")
 //        }
         composable(Screen.SettingMain.route){
-
             SettingRoute(
                 userStateViewModel,
                 settingViewModel

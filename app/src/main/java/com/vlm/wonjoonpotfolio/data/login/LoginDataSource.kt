@@ -27,10 +27,29 @@ class LoginDataSource @Inject constructor(
     }
 
 
-    suspend fun checkUserDataExist() =
+    suspend fun getUserData() =
         firebase.collection("app_user").document(auth.currentUser?.uid?: "").get().await().toObject(User::class.java)
 
-    fun setUserData(user : User) = firebase.collection("app_user").document(auth.currentUser?.uid?: "").set(user)
+    fun setUserData(user : User)
+     = firebase.collection("app_user")
+        .document(auth.currentUser?.uid ?: "")
+        .set(user)
+//    : Boolean {
+//        var success = false
+//        firebase.collection("app_user")
+//            .document(auth.currentUser?.uid ?: "")
+//            .set(user)
+//            .addOnFailureListener {
+//                success = true
+//            }.await()
+//        return success
+//    }
 
     fun logOut() = auth.signOut()
+
+
+
+
+
+
 }

@@ -10,8 +10,6 @@ import kotlinx.coroutines.flow.stateIn
 import javax.inject.Inject
 
 data class SettingViewState(
-    val login: Boolean = false,
-    val email: String = "",
     val img: Uri? = null,
     val localeDialogVisible : Boolean = false,
     val versionControl : Boolean = false,
@@ -34,4 +32,10 @@ constructor(
         SharingStarted.Eagerly,
         _settingViewState.value
     )
+
+    fun clickLocaleDialog(){
+        _settingViewState.value = _settingViewState.value.copy(
+            localeDialogVisible = !_settingViewState.value.localeDialogVisible
+        )
+    }
 }
