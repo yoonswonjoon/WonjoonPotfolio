@@ -28,16 +28,9 @@ class LoginRepository @Inject constructor(
 
     fun checkLogin() = loginDataSource.checkLogin()
 
-
-    fun logOut() = loginDataSource.logOut()
-
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
-
     suspend fun logOutV2() {
         loginDataSource.logOut()
         clearLoginData()
-        // AppUser 클리어
     }
 
     suspend fun clearLoginData(){
@@ -89,7 +82,6 @@ class LoginRepository @Inject constructor(
             }?: return LoginResult(error = LoginErrorType.NotSignedIn)
         }catch (e:Exception){
             return LoginResult(error = LoginErrorType.NotSignedIn)
-//            return LoginResult(error = LoginErrorType.OtherError) 에러 세분화 과정 필요
         }
     }
 

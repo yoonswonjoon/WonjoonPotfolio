@@ -25,10 +25,36 @@ android {
         }
     }
 
+    //서명관련
+    signingConfigs {
+        config {
+            storeFile file('C:\\Users\\dooju\\AndroidStudioProjects\\WonjoonPotfolio\\keys\\wjportfolio.jks')
+            storePassword 'ans1830rha!'
+            keyAlias 'key0'
+            keyPassword 'ans1830rha!'
+        }
+
+        release {
+
+            storeFile file('C:\\Users\\dooju\\AndroidStudioProjects\\WonjoonPotfolio\\keys\\wjportfolio.jks')
+            storePassword 'ans1830rha!'
+            keyAlias 'key0'
+            keyPassword 'ans1830rha!'
+
+            // 아래는 구글 로그인 인증 키 획득에 관한 예시
+            //keytool -exportcert -alias willyou -keystore "C:\Apptestfor\WillyouProject\key\willyou.jks" | "C:\OpenSSL\bin\openssl" sha1 -binary |"C:\OpenSSL\bin\openssl" base64
+            // keytool -exportcert -alias weechkey3 -keystore "C:\Apptestfor\WeechiProject\app\weechikey3.jks" | "C:\OpenSSL\bin\openssl" sha1 -binary |"C:\OpenSSL\bin\openssl" base64
+            //keytool -exportcert -alias androiddebugkey -keystore "C:\Users\82107\.android\debug.keystore" |  "C:\OpenSSL\bin\openssl" sha1 -binary |"C:\OpenSSL\bin\openssl" base64
+            //keytool -list -printcert -jarfile C:\Apptestfor\13.apk | grep "SHA1: " | cut -d " " -f 3 | xxd -r -p | openssl base64
+        }
+    }
+
     buildTypes {
         release {
             minifyEnabled false
+//            shrinkResources false //Glide load image show black when enable proguard 를 해결하기 위해 추가하였다
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release //릴리즈 서명값이용을 위해  추가.
         }
     }
     compileOptions {
