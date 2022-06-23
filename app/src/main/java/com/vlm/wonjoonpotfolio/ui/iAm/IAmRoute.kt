@@ -40,12 +40,11 @@ fun IAmRoute(
     viewModel : IAmViewModel,
     navHostController: NavHostController,
     scaffoldState: ScaffoldState,
+    iamListState: LazyListState,
     toProject : (ProjectData) -> Unit,
 ) {
     val viewState by viewModel.uiState.collectAsState()
-
-    val lazyListState = rememberLazyListState()
-    IAmRoute(viewState = viewState, lazyListState = lazyListState,toProject = toProject )
+    IAmRoute(viewState = viewState, lazyListState = iamListState,toProject = toProject )
 }
 
 

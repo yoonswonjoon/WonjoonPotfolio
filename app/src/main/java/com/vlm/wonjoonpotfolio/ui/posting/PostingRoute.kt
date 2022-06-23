@@ -1,14 +1,15 @@
 package com.vlm.wonjoonpotfolio.ui.posting
 
-import androidx.compose.foundation.layout.defaultMinSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.Button
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -18,15 +19,18 @@ import com.vlm.wonjoonpotfolio.data.posting.Posting
 
 @Composable
 fun PostingRoute(
-    postingViewModel: PostingViewModel
+    postingViewModel: PostingViewModel,
+    rememberLazyListState: LazyListState
 )
 {
     val viewState by postingViewModel.uiState.collectAsState()
-    val items = postingViewModel.items.collectAsLazyPagingItems()
+    val items = postingViewModel.pagingData.collectAsLazyPagingItems()
 
-    LazyColumn(){
+
+//    derivedStateOf { rememberLazyListState.firstVisibleItemIndex }
+    LazyColumn(state = if(items.itemCount>0 ) rememberLazyListState else rememberLazyListState()){
         if(viewState.postingList!=null){
-
+//            items.loadState
         }
 
         item { Button(onClick = postingViewModel::upLoadPosting) {
@@ -38,6 +42,32 @@ fun PostingRoute(
             PostingItem(posting =item!!.toPosting(null))
         }
     }
+
+//    Column() {
+//        Row(horizontalArrangement = Arrangement.End,modifier = Modifier
+//            .fillMaxWidth()
+//            .padding(15.dp)) {
+//            Button(onClick = { /*TODO*/ }) {
+//                Text(text = "글쓰기")
+//            }
+//        }
+//
+//        LazyColumn(state = rememberLazyListState){
+//            if(viewState.postingList!=null){
+//
+//            }
+//
+//            item { Button(onClick = postingViewModel::upLoadPosting) {
+//                Text(text = "TestButton")
+//            } }
+//
+//
+//            itemsIndexed(items){ index, item->
+//                PostingItem(posting =item!!.toPosting(null))
+//            }
+//        }
+//    }
+
 }
 
 

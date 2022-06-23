@@ -28,6 +28,8 @@ class LoginRepository @Inject constructor(
 
     fun checkLogin() = loginDataSource.checkLogin()
 
+    suspend fun currentUserData() : User? = loginDataSource.getUserData()
+
     suspend fun logOutV2() {
         loginDataSource.logOut()
         clearLoginData()

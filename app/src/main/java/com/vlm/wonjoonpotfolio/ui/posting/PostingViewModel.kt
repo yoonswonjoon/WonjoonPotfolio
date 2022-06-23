@@ -2,10 +2,14 @@ package com.vlm.wonjoonpotfolio.ui.posting
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.paging.PagingData
+import androidx.paging.cachedIn
 import androidx.paging.map
 import com.vlm.wonjoonpotfolio.data.posting.GetPostingPagingDataUseCase
+import com.vlm.wonjoonpotfolio.data.posting.Posting
 import com.vlm.wonjoonpotfolio.data.posting.PostingDto
 import com.vlm.wonjoonpotfolio.data.posting.UpLoadPostingUseCase
+import com.vlm.wonjoonpotfolio.data.useCase.GetCurrentUser
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -26,7 +30,8 @@ class PostingViewModel
 @Inject
 constructor(
     private val getPostingPagingDataUseCase: GetPostingPagingDataUseCase,
-    private val upLoadPostingUseCase: UpLoadPostingUseCase
+    private val upLoadPostingUseCase: UpLoadPostingUseCase,
+    private val getCurrentUser: GetCurrentUser
     ): ViewModel()
 {
 
@@ -41,7 +46,10 @@ constructor(
         _uiState.value
     )
 
-    val items = getPostingPagingDataUseCase.data
+    private val _pagingData = MutableStateFlow<PagingData<PostingDto>>(PagingData.empty())
+    val pagingData get() = _pagingData
+
+//    val items = getPostingPagingDataUseCase.data
 
 
     init {
@@ -52,7 +60,15 @@ constructor(
 //                )
 //            }
 //        }
+        viewModelScope.launch {
+            getPostingPagingDataUseCase.data.cachedIn(viewModelScope).collect{
+                _pagingData.value = it
+            }
+        }
         getPostingPagingDataUseCase.data.map {
+//            _pagingData.value = it
+
+
             it.map {
                 val tempor  = _uiState.value.postingList.toMutableList()
                 tempor.add(it)

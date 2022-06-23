@@ -5,6 +5,7 @@ import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -34,10 +35,12 @@ fun PortfolioNavGraph(
     modifier : Modifier =  Modifier
 ) {
     val iamViewModel : IAmViewModel = viewModel()
-    val historyViewModel : HistoryViewModel = viewModel()
     val settingViewModel : SettingViewModel = viewModel()
     val postingViewModel : PostingViewModel = viewModel()
 
+    val lazyListStatePosting = rememberLazyListState()
+
+    val lazyListStateIam = rememberLazyListState()
     NavHost(
         navController = appState.navHostController,
         startDestination = PortfolioDestination.I_AM,
@@ -49,47 +52,17 @@ fun PortfolioNavGraph(
             viewModel = iamViewModel,
             startDestination = Screen.IAmMain.route,
             route = PortfolioDestination.I_AM,
+            iamListState = lazyListStateIam
         )
 
         composable(Screen.HistoryMain.route){
-//            val uiState by historyViewModel.uiState.collectAsState()
-//            Text(text = "@")
-//            LazyColumn{
-//               items(uiState) {
-//                   Row() {
-//                       Text(text = it.data)
-//                       AsyncImage(model = it.uri, contentDescription = null)
-//                   }
-//               }
-//            }
-
-            PostingRoute(postingViewModel)
+            PostingRoute(postingViewModel,lazyListStatePosting)
         }
-//        composable(Screen.ChatMain.route){
-//            Text(text = "3")
-//        }
-//        composable(Screen.EvaluateMain.route){
-//            Text(text = "4")
-//        }
         composable(Screen.SettingMain.route){
             SettingRoute(
                 userStateViewModel,
                 settingViewModel
             )
-//            Column() {
-//                Button(onClick = {
-//                    selectCountry("kr")
-//                }) {
-//                    Text(text = "kr")
-//                }
-//                Button(onClick = {
-//                    selectCountry("en")
-//                }) {
-//                    Text(text = "en")
-//                }
-//                Text(stringResource(id = R.string.test))
-//            }
-
         }
     }
 }

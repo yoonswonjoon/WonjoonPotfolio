@@ -2,6 +2,7 @@ package com.vlm.wonjoonpotfolio.ui.graph.childGraph
 
 import android.os.Build
 import androidx.annotation.RequiresApi
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
@@ -18,6 +19,7 @@ fun NavGraphBuilder.iAmNavGraph(
     appState: PortfolioAppState,
     viewModel: IAmViewModel,
     startDestination : String,
+    iamListState: LazyListState,
     route: String,
 ) {
     navigation(
@@ -28,6 +30,7 @@ fun NavGraphBuilder.iAmNavGraph(
             IAmRoute(
                 viewModel = viewModel,
                 navHostController = appState.navHostController,
+                iamListState = iamListState,
                 scaffoldState = appState.scaffoldState,
                 toProject = {
                     viewModel.selectProject(it)
