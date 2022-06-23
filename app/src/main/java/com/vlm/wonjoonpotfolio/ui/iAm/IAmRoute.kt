@@ -124,7 +124,7 @@ fun IAmRoute(
                 contents = ""
             )
         }
-        items(listOf("Tmi #1","Tmi #2","Tmi #3","Tmi #4","Tmi #5","Tmi #6","Tmi #7","Tmi #8")){
+        items(listOf("Tmi #1")){
             TMIButton(it)
         }
 

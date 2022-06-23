@@ -20,6 +20,8 @@ import com.vlm.wonjoonpotfolio.Screen
 import com.vlm.wonjoonpotfolio.ui.graph.childGraph.iAmNavGraph
 import com.vlm.wonjoonpotfolio.ui.history.HistoryViewModel
 import com.vlm.wonjoonpotfolio.ui.iAm.IAmViewModel
+import com.vlm.wonjoonpotfolio.ui.posting.PostingRoute
+import com.vlm.wonjoonpotfolio.ui.posting.PostingViewModel
 import com.vlm.wonjoonpotfolio.ui.setting.SettingRoute
 import com.vlm.wonjoonpotfolio.ui.setting.SettingViewModel
 
@@ -34,6 +36,7 @@ fun PortfolioNavGraph(
     val iamViewModel : IAmViewModel = viewModel()
     val historyViewModel : HistoryViewModel = viewModel()
     val settingViewModel : SettingViewModel = viewModel()
+    val postingViewModel : PostingViewModel = viewModel()
 
     NavHost(
         navController = appState.navHostController,
@@ -49,16 +52,18 @@ fun PortfolioNavGraph(
         )
 
         composable(Screen.HistoryMain.route){
-            val uiState by historyViewModel.uiState.collectAsState()
-            Text(text = "@")
-            LazyColumn{
-               items(uiState) {
-                   Row() {
-                       Text(text = it.data)
-                       AsyncImage(model = it.uri, contentDescription = null)
-                   }
-               }
-            }
+//            val uiState by historyViewModel.uiState.collectAsState()
+//            Text(text = "@")
+//            LazyColumn{
+//               items(uiState) {
+//                   Row() {
+//                       Text(text = it.data)
+//                       AsyncImage(model = it.uri, contentDescription = null)
+//                   }
+//               }
+//            }
+
+            PostingRoute(postingViewModel)
         }
 //        composable(Screen.ChatMain.route){
 //            Text(text = "3")

@@ -10,6 +10,7 @@ import androidx.compose.material.Text
 import androidx.compose.material.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
@@ -20,6 +21,7 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun DialogBasic(
     onDismiss: () -> Unit,
@@ -32,9 +34,13 @@ fun DialogBasic(
 
     Dialog(
         onDismissRequest = { onDismiss() },
+        properties = DialogProperties(
+            usePlatformDefaultWidth = false,
+
+        )
     ) {
         Surface(
-            modifier = Modifier,
+            modifier = Modifier.width(300.dp),
             shape = RoundedCornerShape(10.dp),
         ) {
             Column(modifier = Modifier
@@ -43,8 +49,10 @@ fun DialogBasic(
                 composable()
 
                 Spacer(modifier = Modifier.height(10.dp))
-                Row(horizontalArrangement = if(justOkBtn)Arrangement.End else Arrangement.SpaceEvenly,
-                modifier = Modifier.fillMaxWidth()) {
+                Row(
+                    horizontalArrangement = if (justOkBtn) Arrangement.End else Arrangement.SpaceEvenly,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
                     if (!justOkBtn) {
                         Surface(
                             shape = RoundedCornerShape(8.dp)

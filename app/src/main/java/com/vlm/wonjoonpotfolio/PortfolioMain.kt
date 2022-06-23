@@ -6,6 +6,9 @@ import android.os.Build
 import android.util.Log
 import android.widget.Space
 import androidx.annotation.RequiresApi
+import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.LinearOutSlowInEasing
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -13,6 +16,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ArrowBack
+import androidx.compose.material.icons.rounded.Person
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -99,7 +103,8 @@ fun PortfolioMain(
                         context = context,
                         login = userViewModel::login
                     )
-                }
+                },
+                onTestClick = userViewModel::login
             )
         }
 
@@ -309,8 +314,21 @@ fun UserStateBox(
 @Composable
 fun PortfolioLoginDialog(
     onDismiss:()->Unit,
-    onLogin : () -> Unit
+    onLogin : () -> Unit,
+    onTestClick : (String, String) -> Unit
 ){
+
+
+    val (id,setId) = remember {
+        mutableStateOf("")
+    }
+    val (password,setPassword) = remember {
+        mutableStateOf("")
+    }
+    val (visible , clicked) = remember {
+        mutableStateOf(false)
+    }
+
     DialogBasic(
         onDismiss = onDismiss,
         onOk = onDismiss,
@@ -326,8 +344,22 @@ fun PortfolioLoginDialog(
                 .height(50.dp)
                 .clickable { onLogin() }
         )
+        Spacer(modifier = Modifier.height(10.dp))
+        Icon(
+            imageVector = Icons.Rounded.Person,
+            contentDescription = null,
+            modifier = Modifier.clickable { clicked(!visible) }
+        )
+        if(visible){
+            OutlinedTextField(value = id, onValueChange = setId, label = {Text("ID")})
+            OutlinedTextField(value = password, onValueChange = setPassword, label = {Text("Password")})
+            Button(onClick = { onTestClick(id,password) }) {
+                Text(text = "테스트 로그인")
+            }
+        }
     }
 }
+
 
 fun loginPortfolio(
     context: Context,
