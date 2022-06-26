@@ -15,6 +15,7 @@ constructor(
     override suspend fun getIam(): IAmTextData {
         val mainDoc = firebase.collection("iam").document("basicInfo")
         val iAm = mainDoc.get().await().toObject(IAmTextData::class.java)
+        println("get iam ${Thread.currentThread()}")
         return iAm!!
     }
 

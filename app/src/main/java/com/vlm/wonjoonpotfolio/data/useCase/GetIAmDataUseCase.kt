@@ -5,6 +5,7 @@ import com.vlm.wonjoonpotfolio.data.ImgData.ImgDataRepository
 import com.vlm.wonjoonpotfolio.data.iAm.iAmTextData.IAmTextDataRepository
 import com.vlm.wonjoonpotfolio.domain.ResultState
 import com.vlm.wonjoonpotfolio.ui.iAm.IAmMainViewState
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
 import javax.inject.Inject
 import kotlin.Exception
@@ -20,9 +21,10 @@ constructor(
     companion object{
         const val TAG = "GetIAmDataUseCase"
     }
-    operator fun invoke(path : String = ""): Flow<ResultState<IAmMainViewState>> = flow {
+    operator fun invoke(path : String = ""): Flow<ResultState<IAmMainViewState>> = flow() {
         try {
             emit(ResultState.loading())
+            println("get iam usecase ${Thread.currentThread()}")
             var data = iAmRepository.getMainView().toIAmViewState()
             emit(ResultState.success(data))
             val uri = imgDataRepository.getImageUpgrade(path)
@@ -32,5 +34,5 @@ constructor(
             firebaseCrashlytics.log("TAG : ${e.message?:"I Don't know"}")
 //            emit(ResultState.error(e.message ?: "i don't know why"))
         }
-    }
+    }.flowOn(Dispatchers.IO)
 }

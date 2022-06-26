@@ -8,6 +8,7 @@ import com.vlm.wonjoonpotfolio.data.useCase.GetAllProjects
 import com.vlm.wonjoonpotfolio.data.useCase.GetIAmDataUseCase
 import com.vlm.wonjoonpotfolio.domain.ResultState
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -69,6 +70,39 @@ constructor(
 
         }.launchIn(viewModelScope)
 
+        println("get iam viewmodel ${Thread.currentThread()}")
+
+//        viewModelScope.launch(Dispatchers.IO) {
+//            getIAmDataUseCase("wj.png").onEach { result ->
+//                when (result) {
+//                    is ResultState.Loading -> {
+//                        _uiState.value = _uiState.value.copy(isLoading = true)
+//                    }
+//                    is ResultState.Success -> {
+//                        _uiState.value = _uiState.value.copy(
+//                            img = result.data.img,
+//                            name = result.data.name,
+//                            birthday = result.data.birthday,
+//                            introduce = result.data.introduce,
+//                            school = result.data.school,
+//                            phone = result.data.phone,
+//                            eid = result.data.eid,
+//                            before = result.data.before,
+//                            isLoading = false,
+//                            projectList = result.data.projectList,
+//                            menu = result.data.menu,
+//                            testImgList = result.data.testImgList,
+//                            imgLoading = result.data.imgLoading
+//                        )
+//                    }
+//                    is ResultState.Error -> {
+//                        _uiState.value = _uiState.value.copy(name = result.message, isLoading = false)
+//                    }
+//                }
+//            }.catch {
+//
+//            }
+//        }
         getIAmDataUseCase("wj.png").onEach { result ->
             when (result) {
                 is ResultState.Loading -> {
